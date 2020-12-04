@@ -140,7 +140,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Proiect.cpp" />
-    <ClCompile Include="database.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="database.h" />
