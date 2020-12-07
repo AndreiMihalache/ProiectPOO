@@ -1,0 +1,10 @@
+﻿  Proiect.cpp
+C:\Users\andre\source\repos\ProiectPOO\database.h(117,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(120,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(123,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(126,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(187,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(207,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(244,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(255,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  Proiect.vcxproj -> C:\Users\andre\source\repos\ProiectPOO\x64\Debug\Proiect.exe

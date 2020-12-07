@@ -5,6 +5,44 @@ using namespace std;
 class coloana
 {
 public:
+	coloana()
+	{
+		this->nume = "";
+		this->tip = "";
+		this->dimensiune = "";
+		this->valoare_implicita = "";
+	}
+	coloana(coloana& c)
+	{
+		this->nume = c.nume;
+		this->tip = c.tip;
+		this->dimensiune = c.dimensiune;
+		this->valoare_implicita = c.valoare_implicita;
+	}
+	coloana operator=(coloana& c)
+	{
+		this->nume = c.nume;
+		this->tip = c.tip;
+		this->dimensiune = c.dimensiune;
+		this->valoare_implicita = c.valoare_implicita;
+		return *this;
+	}
+	void setnume(string n)
+	{
+		this->nume = n;
+	}
+	void settip(string t)
+	{
+		this->tip = t;
+	}
+	void setdim(string d)
+	{
+		this->dimensiune = d;
+	}
+	void setval(string v)
+	{
+		this->valoare_implicita = v;
+	}
 	friend class table;
 private:
 	string nume;
@@ -16,34 +54,84 @@ private:
 class table
 {	
 public:
+	table()
+	{
+		col = nullptr;
+		nume = "";
+		i = 0;
+	} 
+	~table()
+	{
+		delete[]col;
+	}
+	table(table& t)
+	{
+
+		this->nume = t.nume;
+		this->i = t.i;
+		if (this->i)
+		{
+			for (int j = 0; j < i; j++)
+			{
+				this->col[i] = t.col[i];
+			}
+		}
+	}
 	string getnume()
 	{
 		return nume;
-	};
-	void setnume(string nume)
-	{
-		this->nume = nume;
 	}
+	void setnume(string n)
+	{
+		this->nume = n;
+	}
+	void newCol()
+	{
+		if (i == 0)
+		{
+			i++;
+			col = new coloana[i];
+		}
+		else
+		{
+			coloana* aux = new coloana[i+1];
+			for (int j = 0; j < this->i; j++)
+			{
+				aux[j] = col[j];
+			}
+			delete[] col;
+			i++;
+			col = new coloana[i];
+			for (int j = 0; j < this->i-1; j++)
+			{
+				col[j] = aux[j];
+			}
+			delete[] aux;
+		}
+	}
+
 	void adauga_coloana(string instructiune)
 	{
+		newCol();
 		int poz;
 		poz = instructiune.find(",");
-		col[i].nume = instructiune.substr(0, poz);
+		col[i-1].setnume( instructiune.substr(0, poz));
 		instructiune.erase(0, poz+1);
 		poz = instructiune.find(",");
-		col[i].tip = instructiune.substr(0, poz);
+		col[i-1].settip ( instructiune.substr(0, poz));
 		instructiune.erase(0, poz+1);
 		poz = instructiune.find(",");
-		col[i].dimensiune = instructiune.substr(0, poz);
+		col[i-1].setdim( instructiune.substr(0, poz));
 		instructiune.erase(0, poz+1);
 		poz = instructiune.find(",");
-		col[i].valoare_implicita = instructiune.substr(0, poz);
+		col[i-1].setval ( instructiune.substr(0, poz));
 		instructiune.erase(0, poz+1);
 	}
+	friend class database;
 private:
 	string nume;
-	coloana* col = new coloana[100];
-	int i = 0;
+	coloana* col;
+	int i;
 };
 
 
@@ -52,24 +140,48 @@ class database
 public:
 	database()
 	{
-		nr = 0;
+		this->nr = 0;
+		this->tabele = nullptr;
 	}
 	~database()
-	{}
+	{
+		delete[] tabele;
+	}
+	int getnr()
+	{
+		return this->nr;
+	}
 	friend class consola;
-private:
-	int nr;
-	table* tabele = new table[100];
+	void newTable()
+	{
+		if (tabele!=nullptr)
+		{
+			this->nr++;
+			table *aux=new table[nr];
+			for (int i = 0; i < nr-1; i++)
+			{
+				aux[i] = tabele[i];
+			}
+		}
+		else
+		{
+			this->nr++;
+			tabele = new table[nr];
+		}
+	}
 	void create(string nume, string comenzi)
 	{
+		newTable();
 		int i;
 		int ok = 1;
 		string instr;
 		int poz;
 		comenzi += ' ';
-		if (nr == 0)
+		// numerabela 
+		//col1,tip1,dim1,val1
+		if (nr == 1)
 		{
-			tabele[0].setnume(nume);
+			this->tabele[0].setnume(nume);
 			while (comenzi != "")
 			{
 				poz = comenzi.find(" ");
@@ -77,32 +189,42 @@ private:
 				tabele[0].adauga_coloana(instr);
 				comenzi.erase(0, poz + 1);
 			}
+			cout << "Tabela creata" << endl;
 		}
 		else
 		{
-			for (i = 0; i < nr; i++)
+			for (i = 0; i < this->nr; i++)
 			{
-				ok = 0;
+				if (tabele[i].getnume() == nume)
+					ok = 0;
 			}
-		}
-		if (ok)
-		{
-			tabele[nr].setnume(nume);
-			while (comenzi != "")
+
+			if (ok)
 			{
-				poz = comenzi.find(" ");
-				instr = comenzi.substr(0, poz);
-				tabele[nr].adauga_coloana(instr);
-				comenzi.erase(0, poz + 1);
+				tabele[nr].setnume(nume);
+				while (comenzi != "")
+				{
+					poz = comenzi.find(" ");
+					instr = comenzi.substr(0, poz);
+					tabele[nr].adauga_coloana(instr);
+					comenzi.erase(0, poz + 1);
+				}
+				cout << "Tabela creata";
 			}
-			cout << "Tabela creata";
+			else cout << "Tabela existenta";
 		}
-		else cout << "Tabela existenta";
-	};
+	}
+private:
+	int nr;
+	table* tabele;
 };
 
 class consola
 {
+private:
+	string create = "CREATE TABLE";
+	string drop = "DROP TABLE";
+	string display = "DISPLAY TABLE";
 public:
 	string instructiune;
 	consola()
@@ -118,20 +240,25 @@ public:
 	int crud(database a)
 	{
 		if (instructiune == "EXIT") return 0;
-		int poz;
-		string create = "CREATE TABLE";
-		string drop = "DROP TABLE";
-		string display = "DISPLAY TABLE";
+		int poz,ok;
 		poz = instructiune.find(create);
 		if (poz != -1)
 		{
+			ok = crud_create(a,poz);
+		}
+		return ok;
+	};
+	int crud_create(database a,int poz)
+	{
+		
 			instructiune.erase(poz, create.length() + 1);
 			poz = instructiune.find(" ");
 			string nume = instructiune.substr(0, poz);
 			instructiune.erase(0, poz + 1);
 			a.create(nume, instructiune);
-		}
-		return 1;
-	};
+			return 1;
+		
+	}
 
 };
+//CREATE TABLE numetabela col1,tip1,dim1,val1
