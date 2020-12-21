@@ -2,6 +2,22 @@
 #include <string>
 using namespace std;
 
+class rand
+{
+private:
+	string* val;
+public:
+	rand()
+	{
+		//toate sunt null
+	}
+	rand(string v, int nrcol)
+	{
+		
+	}
+};
+// insert into table1 val1,val2,val3,val4;
+
 class coloana
 {
 public:
