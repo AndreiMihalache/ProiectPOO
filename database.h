@@ -11,10 +11,6 @@ public:
 	{
 		//toate sunt null
 	}
-	rand(string v, int nrcol)
-	{
-		
-	}
 };
 // insert into table1 val1,val2,val3,val4;
 
@@ -25,6 +21,7 @@ private:
 	string tip;
 	string dimensiune;
 	string valoare_implicita;
+
 public:
 	coloana()
 	{
@@ -95,7 +92,7 @@ public:
 		{
 			for (int j = 0; j < i; j++)
 			{
-				this->col[i] = t.col[i];
+				this->col[j] = t.col[j];
 			}
 		}
 	}
@@ -245,6 +242,7 @@ public:
 	}
 	void drop(string nume)
 	{
+		cout<<this->nr;
 		table* aux = new table[nr - 1];
 		int j=0;
 		for (int i = 0; i < nr; i++)
@@ -283,23 +281,34 @@ public:
 		cout << "DROP TABLE nume_tabela"<<endl;
 		cout << "DISPLAY TABLE nume_tabela"<<endl;
 		cout << "Introduceti instructiune" << endl;
-		getline(std::cin, instructiune);
 	}
 	int crud(database a)
 	{
-		if (instructiune == "EXIT") return 0;
-		int poz,ok;
-		poz = instructiune.find(create);
-		if (poz != -1)
+		
+		int poz=-1,ok=1;
+		while (ok)
 		{
-			ok = crud_create(a,poz);
+			getline(std::cin, instructiune);
+			if (instructiune == "EXIT")
+			{
+				ok = 0;
+				return 0;
+			}
+			else
+			{
+				poz = instructiune.find(create);
+				if (poz != -1)
+				{
+					ok = crud_create(a, poz);
+				}
+				poz = instructiune.find(drop);
+				if (poz != -1)
+				{
+					ok = crud_drop(a, poz);
+				}
+			}
 		}
-		poz = instructiune.find(drop);
-		if (poz != -1)
-		{
-			ok = crud_create(a, poz);
-		}
-		return ok;
+		return 1;
 	};
 	int crud_create(database a,int poz)
 	{
