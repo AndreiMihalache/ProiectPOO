@@ -20,6 +20,11 @@ public:
 
 class coloana
 {
+private:
+	string nume;
+	string tip;
+	string dimensiune;
+	string valoare_implicita;
 public:
 	coloana()
 	{
@@ -60,15 +65,15 @@ public:
 		this->valoare_implicita = v;
 	}
 	friend class table;
-private:
-	string nume;
-	string tip;
-	string dimensiune;
-	string valoare_implicita;
+
 };
 
 class table
-{	
+{
+private:
+	string nume;
+	coloana* col;
+	int i;	
 public:
 	table()
 	{
@@ -145,10 +150,7 @@ public:
 		instructiune.erase(0, poz+1);
 	}
 	friend class database;
-private:
-	string nume;
-	coloana* col;
-	int i;
+
 };
 
 
@@ -183,6 +185,13 @@ public:
 			{
 				aux[i] = tabele[i];
 			}
+			delete[] tabele;
+			tabele = new table[nr];
+			for (int i = 0; i < nr; i++)
+			{
+				tabele[i] = aux[i];
+			}
+			delete[] aux;
 		}
 		else
 		{
@@ -198,8 +207,7 @@ public:
 		string instr;
 		int poz;
 		comenzi += ' ';
-		// numerabela 
-		//col1,tip1,dim1,val1
+		//numetabela col1,tip1,dim1,val1 col1,tip2,dim2,val2
 		if (nr == 1)
 		{
 			this->tabele[0].setnume(nume);
