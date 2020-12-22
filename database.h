@@ -72,12 +72,13 @@ class table
 public:
 	table()
 	{
-		col = nullptr;
+		//col = nullptr;
 		nume = "";
 		i = 0;
 	} 
 	~table()
 	{
+		if(col!=nullptr)
 		delete[]col;
 	}
 	table(table& t)
@@ -153,14 +154,18 @@ private:
 
 class database
 {
+private:
+	int nr;
+	table* tabele;
 public:
 	database()
 	{
 		this->nr = 0;
-		this->tabele = nullptr;
+		//this->tabele = nullptr;
 	}
 	~database()
 	{
+		if(this->tabele!=nullptr)
 		delete[] tabele;
 	}
 	int getnr()
@@ -230,9 +235,28 @@ public:
 			else cout << "Tabela existenta";
 		}
 	}
-private:
-	int nr;
-	table* tabele;
+	void drop(string nume)
+	{
+		table* aux = new table[nr - 1];
+		int j=0;
+		for (int i = 0; i < nr; i++)
+		{
+			if (tabele[i].getnume() != nume)
+			{
+				aux[j] = tabele[i];
+				j++;
+			}
+		}
+		delete[] tabele;
+		nr-=1;
+		tabele = new table[nr];
+		for (int i = 0; i <= nr; i++)
+		{
+			tabele[i] = aux[i];
+		}
+		delete[] aux;
+	}
+
 };
 
 class consola
@@ -262,6 +286,11 @@ public:
 		{
 			ok = crud_create(a,poz);
 		}
+		poz = instructiune.find(drop);
+		if (poz != -1)
+		{
+			ok = crud_create(a, poz);
+		}
 		return ok;
 	};
 	int crud_create(database a,int poz)
@@ -273,7 +302,12 @@ public:
 			instructiune.erase(0, poz + 1);
 			a.create(nume, instructiune);
 			return 1;
-		
+	}
+	int crud_drop(database a, int poz)
+	{
+		instructiune.erase(poz, drop.length() + 1);
+		a.drop(instructiune);
+		return 1;
 	}
 
 };
