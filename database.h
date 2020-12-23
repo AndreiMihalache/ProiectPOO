@@ -1,5 +1,6 @@
 #include<iostream>
 #include <string>
+#include <list>
 using namespace std;
 
 class rand
@@ -9,10 +10,10 @@ private:
 public:
 	rand()
 	{
-		//toate sunt null
+		
 	}
 };
-// insert into table1 val1,val2,val3,val4;
+
 
 class coloana
 {
@@ -74,7 +75,7 @@ private:
 public:
 	table()
 	{
-		//col = nullptr;
+		col = nullptr;
 		nume = "";
 		i = 0;
 	} 
@@ -85,16 +86,43 @@ public:
 	}
 	table(table& t)
 	{
-
+	
 		this->nume = t.nume;
 		this->i = t.i;
 		if (this->i)
 		{
+			this->col = new coloana[i];
 			for (int j = 0; j < i; j++)
 			{
 				this->col[j] = t.col[j];
 			}
 		}
+		else
+		{
+			col = nullptr;
+		}
+	}
+	table operator=(table& t)
+	{
+		if (this->col != nullptr)
+		{
+			delete[] col;
+		}
+		this->nume = t.nume;
+		this->i = t.i;
+		if (this->i)
+		{
+			this->col = new coloana[i];
+			for (int j = 0; j < i; j++)
+			{
+				this->col[j] = t.col[j];
+			}
+		}
+		else
+		{
+			col = nullptr;
+		}
+		return *this;
 	}
 	string getnume()
 	{
@@ -159,8 +187,8 @@ private:
 public:
 	database()
 	{
-		this->nr = 0;
-		//this->tabele = nullptr;
+		this->nr = 1;
+		this->tabele = nullptr;
 	}
 	~database()
 	{
@@ -176,7 +204,7 @@ public:
 	{
 		if (tabele!=nullptr)
 		{
-			this->nr++;
+			//this->nr++;
 			table *aux=new table[nr];
 			for (int i = 0; i < nr-1; i++)
 			{
@@ -184,7 +212,7 @@ public:
 			}
 			delete[] tabele;
 			tabele = new table[nr];
-			for (int i = 0; i < nr; i++)
+			for (int i = 0; i < nr-1; i++)
 			{
 				tabele[i] = aux[i];
 			}
@@ -192,7 +220,7 @@ public:
 		}
 		else
 		{
-			this->nr++;
+			//this->nr++;
 			tabele = new table[nr];
 		}
 	}
@@ -207,14 +235,15 @@ public:
 		//numetabela col1,tip1,dim1,val1 col1,tip2,dim2,val2
 		if (nr == 1)
 		{
-			this->tabele[0].setnume(nume);
+			this->tabele[nr-1].setnume(nume);
 			while (comenzi != "")
 			{
 				poz = comenzi.find(" ");
 				instr = comenzi.substr(0, poz);
-				tabele[0].adauga_coloana(instr);
+				tabele[nr-1].adauga_coloana(instr);
 				comenzi.erase(0, poz + 1);
 			}
+			nr++;
 			cout << "Tabela creata" << endl;
 		}
 		else
@@ -227,12 +256,12 @@ public:
 
 			if (ok)
 			{
-				tabele[nr].setnume(nume);
+				tabele[nr-1].setnume(nume);
 				while (comenzi != "")
 				{
 					poz = comenzi.find(" ");
 					instr = comenzi.substr(0, poz);
-					tabele[nr].adauga_coloana(instr);
+					tabele[nr-1].adauga_coloana(instr);
 					comenzi.erase(0, poz + 1);
 				}
 				cout << "Tabela creata";
@@ -242,25 +271,33 @@ public:
 	}
 	void drop(string nume)
 	{
-		cout<<this->nr;
-		table* aux = new table[nr - 1];
-		int j=0;
-		for (int i = 0; i < nr; i++)
+		
+		if (nr == 1)
 		{
-			if (tabele[i].getnume() != nume)
+			delete[] tabele;
+		}
+		else 
+		{
+			table* aux = new table[nr - 1];
+			int j = 0;
+			for (int i = 0; i < nr-1; i++)
 			{
-				aux[j] = tabele[i];
-				j++;
+				if (tabele[i].getnume() != nume)
+				{
+					aux[j] = tabele[i];
+					j++;
+				}
 			}
+			delete[] tabele;
+			nr -= 1;
+			tabele = new table[nr];
+			for (int i = 0; i < nr; i++)
+			{
+				tabele[i] = aux[i];
+			}
+			delete[] aux;
 		}
-		delete[] tabele;
-		nr-=1;
-		tabele = new table[nr];
-		for (int i = 0; i <= nr; i++)
-		{
-			tabele[i] = aux[i];
-		}
-		delete[] aux;
+		cout <<endl<< "Tabela " << nume << " a fost stearsa";
 	}
 
 };
@@ -282,12 +319,13 @@ public:
 		cout << "DISPLAY TABLE nume_tabela"<<endl;
 		cout << "Introduceti instructiune" << endl;
 	}
-	int crud(database a)
+	int crud(database &a)
 	{
 		
 		int poz=-1,ok=1;
 		while (ok)
 		{
+			cout << endl;
 			getline(std::cin, instructiune);
 			if (instructiune == "EXIT")
 			{
@@ -310,7 +348,7 @@ public:
 		}
 		return 1;
 	};
-	int crud_create(database a,int poz)
+	int crud_create(database &a,int poz)
 	{
 		
 			instructiune.erase(poz, create.length() + 1);
@@ -320,7 +358,7 @@ public:
 			a.create(nume, instructiune);
 			return 1;
 	}
-	int crud_drop(database a, int poz)
+	int crud_drop(database &a, int poz)
 	{
 		instructiune.erase(poz, drop.length() + 1);
 		a.drop(instructiune);
