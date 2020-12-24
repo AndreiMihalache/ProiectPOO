@@ -10,7 +10,7 @@ private:
 public:
 	rand()
 	{
-		
+
 	}
 };
 
@@ -46,47 +46,97 @@ public:
 		this->valoare_implicita = c.valoare_implicita;
 		return *this;
 	}
-	void setnume(string n)
+	string getNume()
 	{
-		this->nume = n;
+		return this->nume;
 	}
-	void settip(string t)
+	string getTip()
 	{
-		this->tip = t;
+		return this->tip;
 	}
-	void setdim(string d)
+	string getDim()
 	{
-		this->dimensiune = d;
+		return this->dimensiune;
 	}
-	void setval(string v)
+	string getVal()
 	{
-		this->valoare_implicita = v;
+		return this->valoare_implicita;
+	}
+	void setNume(string nume)
+	{
+		this->nume = nume;
+	}
+	void setTip(string tip)
+	{
+		this->tip = tip;
+	}
+	void setDim(string dimensiune)
+	{
+		this->dimensiune = dimensiune;
+	}
+	void setVal(string valoare_implicita)
+	{
+		this->valoare_implicita = valoare_implicita;
 	}
 	friend class table;
 
+	friend istream& operator>>(istream&, coloana&);
+	friend ostream& operator<<(ostream&, coloana);
 };
+
+istream& operator>>(istream& i, coloana& c)
+{
+	string buffer;
+	cout << "Nume = ";
+	i >> ws;
+	getline(i, buffer);
+	c.setNume(buffer);
+	cout << "Tip = ";
+	i >> ws;
+	getline(i, buffer);
+	c.setTip(buffer);
+	cout << "Dimensiune = ";
+	i >> ws;
+	getline(i, buffer);
+	c.setDim(buffer);
+	cout << "Valoare implicita = ";
+	i >> ws;
+	getline(i, buffer);
+	c.setVal(buffer);
+	return i;
+}
+
+ostream& operator<<(ostream& o, coloana c)
+{
+	o << endl;
+	o << "Nume : " << c.getNume() << endl;
+	o << "Tip : " << c.getTip() << endl;
+	o << "Dimensiune : " << c.getDim() << endl;
+	o << "Valoare implicita : " << c.getVal() << endl;
+	return o;
+}
 
 class table
 {
 private:
 	string nume;
 	coloana* col;
-	int i;	
+	int i;
 public:
 	table()
 	{
 		col = nullptr;
 		nume = "";
 		i = 0;
-	} 
+	}
 	~table()
 	{
-		if(col!=nullptr)
-		delete[]col;
+		if (col != nullptr)
+			delete[]col;
 	}
 	table(table& t)
 	{
-	
+
 		this->nume = t.nume;
 		this->i = t.i;
 		if (this->i)
@@ -124,13 +174,36 @@ public:
 		}
 		return *this;
 	}
-	string getnume()
+	string getNume()
 	{
 		return nume;
 	}
-	void setnume(string n)
+	int getI()
+	{
+		return i;
+	}
+	void setNume(string n)
 	{
 		this->nume = n;
+	}
+	void setCol(coloana* col, int i)
+	{
+		if (this->col != nullptr)
+		{
+			delete[] this->col;
+		}
+		if (i)
+		{
+			this->col = new coloana[i];
+			for (int j = 0;j < i;j++)
+			{
+				this->col[j] = col[j];
+			}
+		}
+	}
+	void setI(int i)
+	{
+		this->i = i;
 	}
 	void newCol()
 	{
@@ -141,7 +214,7 @@ public:
 		}
 		else
 		{
-			coloana* aux = new coloana[i+1];
+			coloana* aux = new coloana[i + 1];
 			for (int j = 0; j < this->i; j++)
 			{
 				aux[j] = col[j];
@@ -149,7 +222,7 @@ public:
 			delete[] col;
 			i++;
 			col = new coloana[i];
-			for (int j = 0; j < this->i-1; j++)
+			for (int j = 0; j < this->i - 1; j++)
 			{
 				col[j] = aux[j];
 			}
@@ -162,22 +235,59 @@ public:
 		newCol();
 		int poz;
 		poz = instructiune.find(",");
-		col[i-1].setnume( instructiune.substr(0, poz));
-		instructiune.erase(0, poz+1);
+		col[i - 1].setNume(instructiune.substr(0, poz));
+		instructiune.erase(0, poz + 1);
 		poz = instructiune.find(",");
-		col[i-1].settip ( instructiune.substr(0, poz));
-		instructiune.erase(0, poz+1);
+		col[i - 1].setTip(instructiune.substr(0, poz));
+		instructiune.erase(0, poz + 1);
 		poz = instructiune.find(",");
-		col[i-1].setdim( instructiune.substr(0, poz));
-		instructiune.erase(0, poz+1);
+		col[i - 1].setDim(instructiune.substr(0, poz));
+		instructiune.erase(0, poz + 1);
 		poz = instructiune.find(",");
-		col[i-1].setval ( instructiune.substr(0, poz));
-		instructiune.erase(0, poz+1);
+		col[i - 1].setVal(instructiune.substr(0, poz));
+		instructiune.erase(0, poz + 1);
 	}
 	friend class database;
 
+	friend istream& operator>>(istream&, table&);
+	friend ostream& operator<<(ostream&, table);
 };
 
+istream& operator>>(istream& i, table& t)
+{
+	string buffer;
+	cout << "Nume = ";
+	i >> ws;
+	getline(i, buffer);
+	t.setNume(buffer);
+	cout << "Numar coloane = ";
+	i >> t.i;
+	if (t.i)
+	{
+		t.col = new coloana[t.i];
+		for (int j = 0;j < t.i;j++)
+		{
+			i >> t.col[j];
+		}
+		//t.setCol(t.col, t.i);
+	}
+	else
+	{
+		t.col = nullptr;
+	}
+	return i;
+}
+
+ostream& operator<<(ostream& o, table t)
+{
+	o << "Nume : " << t.getNume() << endl;
+	o << "Numar coloane : " << t.getI() << endl;
+	for (int j = 0;j < t.i;j++)
+	{
+		o << "Coloana " << j + 1 << " : " << t.col[j] << endl;
+	}
+	return o;
+}
 
 class database
 {
@@ -192,8 +302,8 @@ public:
 	}
 	~database()
 	{
-		if(this->tabele!=nullptr)
-		delete[] tabele;
+		if (this->tabele != nullptr)
+			delete[] tabele;
 	}
 	int getnr()
 	{
@@ -202,17 +312,17 @@ public:
 	friend class consola;
 	void newTable()
 	{
-		if (tabele!=nullptr)
+		if (tabele != nullptr)
 		{
 			//this->nr++;
-			table *aux=new table[nr];
-			for (int i = 0; i < nr-1; i++)
+			table* aux = new table[nr];
+			for (int i = 0; i < nr - 1; i++)
 			{
 				aux[i] = tabele[i];
 			}
 			delete[] tabele;
 			tabele = new table[nr];
-			for (int i = 0; i < nr-1; i++)
+			for (int i = 0; i < nr - 1; i++)
 			{
 				tabele[i] = aux[i];
 			}
@@ -235,12 +345,12 @@ public:
 		//numetabela col1,tip1,dim1,val1 col1,tip2,dim2,val2
 		if (nr == 1)
 		{
-			this->tabele[nr-1].setnume(nume);
+			this->tabele[nr - 1].setNume(nume);
 			while (comenzi != "")
 			{
 				poz = comenzi.find(" ");
 				instr = comenzi.substr(0, poz);
-				tabele[nr-1].adauga_coloana(instr);
+				tabele[nr - 1].adauga_coloana(instr);
 				comenzi.erase(0, poz + 1);
 			}
 			nr++;
@@ -250,18 +360,18 @@ public:
 		{
 			for (i = 0; i < this->nr; i++)
 			{
-				if (tabele[i].getnume() == nume)
+				if (tabele[i].getNume() == nume)
 					ok = 0;
 			}
 
 			if (ok)
 			{
-				tabele[nr-1].setnume(nume);
+				tabele[nr - 1].setNume(nume);
 				while (comenzi != "")
 				{
 					poz = comenzi.find(" ");
 					instr = comenzi.substr(0, poz);
-					tabele[nr-1].adauga_coloana(instr);
+					tabele[nr - 1].adauga_coloana(instr);
 					comenzi.erase(0, poz + 1);
 				}
 				cout << "Tabela creata";
@@ -271,18 +381,18 @@ public:
 	}
 	void drop(string nume)
 	{
-		
+
 		if (nr == 1)
 		{
 			delete[] tabele;
 		}
-		else 
+		else
 		{
 			table* aux = new table[nr - 1];
 			int j = 0;
-			for (int i = 0; i < nr-1; i++)
+			for (int i = 0; i < nr - 1; i++)
 			{
-				if (tabele[i].getnume() != nume)
+				if (tabele[i].getNume() != nume)
 				{
 					aux[j] = tabele[i];
 					j++;
@@ -297,7 +407,7 @@ public:
 			}
 			delete[] aux;
 		}
-		cout <<endl<< "Tabela " << nume << " a fost stearsa";
+		cout << endl << "Tabela " << nume << " a fost stearsa";
 	}
 
 };
@@ -315,14 +425,14 @@ public:
 		cout << "SGBD Tip SQL Lite" << endl;
 		cout << "Sintaxa instructiuni:" << endl;
 		cout << "CREATE TABLE nume_tabela nume_coloana,tip,dimensiune,valoare_implicata nume_coloana2,tip,dimensiune,valoare" << endl;
-		cout << "DROP TABLE nume_tabela"<<endl;
-		cout << "DISPLAY TABLE nume_tabela"<<endl;
+		cout << "DROP TABLE nume_tabela" << endl;
+		cout << "DISPLAY TABLE nume_tabela" << endl;
 		cout << "Introduceti instructiune" << endl;
 	}
-	int crud(database &a)
+	int crud(database& a)
 	{
-		
-		int poz=-1,ok=1;
+
+		int poz = -1, ok = 1;
 		while (ok)
 		{
 			cout << endl;
@@ -348,17 +458,17 @@ public:
 		}
 		return 1;
 	};
-	int crud_create(database &a,int poz)
+	int crud_create(database& a, int poz)
 	{
-		
-			instructiune.erase(poz, create.length() + 1);
-			poz = instructiune.find(" ");
-			string nume = instructiune.substr(0, poz);
-			instructiune.erase(0, poz + 1);
-			a.create(nume, instructiune);
-			return 1;
+
+		instructiune.erase(poz, create.length() + 1);
+		poz = instructiune.find(" ");
+		string nume = instructiune.substr(0, poz);
+		instructiune.erase(0, poz + 1);
+		a.create(nume, instructiune);
+		return 1;
 	}
-	int crud_drop(database &a, int poz)
+	int crud_drop(database& a, int poz)
 	{
 		instructiune.erase(poz, drop.length() + 1);
 		a.drop(instructiune);
