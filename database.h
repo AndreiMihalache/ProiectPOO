@@ -862,3 +862,4 @@ public:
 
 };
 //CREATE TABLE numetabela col1,tip1,dim1,val1 col2,tip2,dim2,val2
+//un com
