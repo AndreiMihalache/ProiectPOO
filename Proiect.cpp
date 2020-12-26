@@ -8,5 +8,11 @@ int main()
 	database a;
 	consola c;
 	c.crud(a);
-	return 0;
+	/*reg r;
+	cin >> r;
+	cout << r;
+	r.delpos(1);
+	cout << r;*/
+	return 0; 
+	
 }

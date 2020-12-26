@@ -3,17 +3,195 @@
 #include <list>
 using namespace std;
 
-class rand
+class reg
 {
 private:
-	string* val;
+	static int index;
+	string* valori;
+	int contor,capacitate;
 public:
-	rand()
+	reg()
 	{
+		index++;
+		valori = nullptr;
+		contor = 0;
+		capacitate = 0;
+	}
+	reg(int nrcol)
+	{
+		index++;
+		valori = new string[nrcol];
+		contor = 0;
+		capacitate = nrcol;
+	}
+	reg(reg& r)
+	{
+		this->contor = r.contor;
+		this->capacitate = r.capacitate;
+		if (this->capacitate)
+		{
+			valori = new string[capacitate];
+			for (int i = 0; i < capacitate; i++)
+			{
+				this->valori[i] = r.valori[i];
+			}
+		}
+		else
+		{
+			this->valori = nullptr;
+		}
+	}
+	reg operator=(reg& r)
+	{
+		if (this->valori != nullptr)
+		{
+			delete[]this->valori;
+		}
+		this->contor = r.contor;
+		this->capacitate = r.capacitate;
+		if (this->capacitate)
+		{
+			valori = new string[capacitate];
+			for (int i = 0; i < capacitate; i++)
+			{
+				this->valori[i] = r.valori[i];
+			}
+		}
+		else
+		{
+			this->valori = nullptr;
+		}
+		return *this;
+	}
+	~reg()
+	{
+		index--;
+		if (valori != nullptr)
+		{
+			delete[] valori;
+		}
 
 	}
+	void setCap(int n)
+	{
+		this->capacitate = n;
+		if (valori == nullptr)
+		{
+			valori = new string[n];
+		}
+		else
+		{
+			delete[] valori;
+			valori = new string[n];
+		}
+	}
+	void delpos(int ind)
+	{
+		if (ind > capacitate)
+		{
+			cout << "Index incorect";
+		}
+		else
+		{
+			int k = 0;
+			string* aux = new string[capacitate -1];
+			for(int i=0;i<capacitate;i++)
+			{
+				if (i != ind)
+				{
+					aux[k] = valori[i];
+					k++;
+				}
+			}
+			capacitate--;
+			contor--;
+			delete[] valori;
+			valori = new string[capacitate];
+			for (int i = 0; i < capacitate; i++)
+			{
+				valori[i] = aux[i];
+			}
+			delete[] aux;
+		}
+	}
+	void addval()
+	{
+		if (valori == nullptr)
+		{
+			valori = new string[1];
+			capacitate = 1;
+		}
+		else
+		{
+			string* aux = new string[capacitate + 1];
+			for (int i = 0; i < capacitate; i++)
+			{
+				aux[i] = valori[i];
+			}
+			delete[] valori;
+			capacitate++;
+			valori = new string[capacitate];
+			for (int i = 0; i < capacitate-1; i++)
+			{
+				valori[i]=aux[i];
+			}
+			valori[capacitate - 1] = "";
+		}
+	}
+	void append(string val)
+	{
+		if (valori == nullptr)
+		{
+			valori = new string[1];
+			valori[contor] = val;
+			contor++;
+		}
+		else
+		{
+			if (contor < capacitate)
+			{
+				valori[contor] = val;
+				contor++;
+			}
+			else
+			{
+				cout << "Capacitate maxima atinsa";
+			}
+		}
+	}
+	friend istream& operator>>(istream&, reg&);
+	friend ostream& operator<<(ostream&, reg);
 };
 
+istream& operator>>(istream& i, reg& r)
+{
+	cout << endl<<"Capacitate: ";
+	i >> r.capacitate;
+	r.contor = 0;
+	if(r.capacitate!=0)
+	{
+		r.valori = new string[r.capacitate];
+		cout << endl << "Valori: " << endl;
+		for (int it = 0; it < r.capacitate; it++)
+		{
+			i >> r.valori[it];
+		}	 
+	}
+	return i;
+}
+
+ostream& operator<<(ostream& o, reg r)
+{
+	o << endl;
+	o << "Capacitate: " << r.capacitate << endl;
+	for (int i = 0; i < r.capacitate; i++)
+	{
+		o << r.valori[i] << " ";
+	}
+	return o;
+}
+
+int reg::index = -1;
 
 class coloana
 {
@@ -121,24 +299,30 @@ class table
 private:
 	string nume;
 	coloana* col;
-	int i;
+	int i, k;
+	reg *rand;
 public:
 	table()
 	{
 		col = nullptr;
 		nume = "";
 		i = 0;
+		rand = nullptr;
+		k = 0;
 	}
 	~table()
 	{
 		if (col != nullptr)
 			delete[]col;
+		if (rand != nullptr)
+			delete[]rand;
 	}
 	table(table& t)
 	{
 
 		this->nume = t.nume;
 		this->i = t.i;
+		this->k = t.k;
 		if (this->i)
 		{
 			this->col = new coloana[i];
@@ -150,6 +334,18 @@ public:
 		else
 		{
 			col = nullptr;
+		}
+		if (this->k)
+		{
+			this->rand = new reg[k];
+			for (int j = 0; j < k; j++)
+			{
+				this->rand[j] = t.rand[j];
+			}
+		}
+		else
+		{
+			rand = nullptr;
 		}
 	}
 	table operator=(table& t)
@@ -158,6 +354,10 @@ public:
 		{
 			delete[] col;
 		}
+		if (this->rand != nullptr)
+		{
+			delete[] rand;
+		}
 		this->nume = t.nume;
 		this->i = t.i;
 		if (this->i)
@@ -171,6 +371,19 @@ public:
 		else
 		{
 			col = nullptr;
+		}
+		this->k = t.k;
+		if (this->k)
+		{
+			this->rand = new reg[k];
+			for (int j = 0; j < k; j++)
+			{
+				this->rand[j] = t.rand[j];
+			}
+		}
+		else
+		{
+			rand = nullptr;
 		}
 		return *this;
 	}
@@ -185,21 +398,6 @@ public:
 	void setNume(string n)
 	{
 		this->nume = n;
-	}
-	void setCol(coloana* col, int i)
-	{
-		if (this->col != nullptr)
-		{
-			delete[] this->col;
-		}
-		if (i)
-		{
-			this->col = new coloana[i];
-			for (int j = 0;j < i;j++)
-			{
-				this->col[j] = col[j];
-			}
-		}
 	}
 	void setI(int i)
 	{
@@ -229,7 +427,41 @@ public:
 			delete[] aux;
 		}
 	}
-
+	void sterge_coloana(int index)
+	{
+		if (index<0 || index >i || col == nullptr)
+		{
+			cout << endl << "Operatie imposibila";
+		}
+		else
+		{
+			int contor = 0;
+			coloana *aux = new coloana[i - 1];
+			for (int j = 0; j < i; j++)
+			{
+				if (j != index)
+				{
+					aux[contor] = col[j];
+					contor++;
+				}
+			}
+			delete[] col;
+			i--;
+			col = new coloana[i];
+			for (int j = 0; j < i; j++)
+			{
+				col[i] = aux[i];
+			}
+			delete[] aux;
+			if (rand!=nullptr)
+			{
+				for (int j = 0; j < k; j++)
+				{
+					rand[j].delpos(index);
+				}
+			}
+		}
+	}
 	void adauga_coloana(string instructiune)
 	{
 		newCol();
@@ -247,6 +479,74 @@ public:
 		col[i - 1].setVal(instructiune.substr(0, poz));
 		instructiune.erase(0, poz + 1);
 	}
+	int valid(string val, int index)
+	{
+		int ok=-1;
+		if(col[index].tip=="int"&&ok!=1)
+		{
+			if (to_string(stoi(val)) == val && val.size() < stoi(col[index].dimensiune))
+				return ok = 1;
+		}
+		if (col[index].tip == "float" && ok != 1 )
+		{
+			if (to_string(stof(val)) == val && val.size() < stoi(col[index].dimensiune))
+				return ok = 1;
+		}
+		if (col[index].tip == "text" && ok != 1)
+		{
+			if(val.size() < stoi(col[index].dimensiune))
+			ok = 1;
+		}
+		return ok;
+	}
+	void addrand()
+	{
+		if (k == 0)
+		{
+			k++;
+			rand = new reg[k];
+			rand[0].setCap(i-1);
+			rand[0].addval();
+		}
+		else
+		{
+			reg* aux = new reg[k + 1];
+			for (int j = 0; j < this->k; j++)
+			{
+				aux[j] = rand[j];
+			}
+			delete[] rand;
+			k++;
+			rand = new reg[k];
+			for (int j = 0; j < this->k - 1; j++)
+			{
+				//rand[j].setCap(i-1);
+				//rand[j].addval();
+				rand[j] = aux[j];
+			}
+			delete[] aux;
+		}
+
+	}
+	void insert(string values)
+	{
+		addrand();
+		string val;
+		values = values + ",";
+		int poz,index=-1;
+		while (values != "")
+		{
+			poz = values.find(",");
+			val = values.substr(0, poz);
+			index++;
+			if (valid(val, index) == 1)
+			{
+				rand[k - 1].append(val);
+			}
+			values.erase(0, poz + 1);
+		}
+	}
+
 	friend class database;
 
 	friend istream& operator>>(istream&, table&);
@@ -269,7 +569,6 @@ istream& operator>>(istream& i, table& t)
 		{
 			i >> t.col[j];
 		}
-		//t.setCol(t.col, t.i);
 	}
 	else
 	{
@@ -314,7 +613,6 @@ public:
 	{
 		if (tabele != nullptr)
 		{
-			//this->nr++;
 			table* aux = new table[nr];
 			for (int i = 0; i < nr - 1; i++)
 			{
@@ -330,7 +628,6 @@ public:
 		}
 		else
 		{
-			//this->nr++;
 			tabele = new table[nr];
 		}
 	}
@@ -342,7 +639,6 @@ public:
 		string instr;
 		int poz;
 		comenzi += ' ';
-		//numetabela col1,tip1,dim1,val1 col1,tip2,dim2,val2
 		if (nr == 1)
 		{
 			this->tabele[nr - 1].setNume(nume);
@@ -374,6 +670,7 @@ public:
 					tabele[nr - 1].adauga_coloana(instr);
 					comenzi.erase(0, poz + 1);
 				}
+				nr++;
 				cout << "Tabela creata";
 			}
 			else cout << "Tabela existenta";
@@ -381,33 +678,80 @@ public:
 	}
 	void drop(string nume)
 	{
-
-		if (nr == 1)
+		int ok=0,i;
+		for (i = 0; i < this->nr; i++)
 		{
-			delete[] tabele;
+			if (tabele[i].getNume() == nume)
+				ok = 1;
 		}
-		else
+		if (ok)
 		{
-			table* aux = new table[nr - 1];
-			int j = 0;
-			for (int i = 0; i < nr - 1; i++)
+			if (nr == 1)
 			{
-				if (tabele[i].getNume() != nume)
+				delete[] tabele;
+			}
+			else
+			{
+				table* aux = new table[nr - 1];
+				int j = 0;
+				for (int i = 0; i < nr - 1; i++)
 				{
-					aux[j] = tabele[i];
-					j++;
+					if (tabele[i].getNume() != nume)
+					{
+						aux[j] = tabele[i];
+						j++;
+					}
+				}
+				delete[] tabele;
+				nr -= 1;
+				tabele = new table[nr];
+				for (int i = 0; i < nr; i++)
+				{
+					tabele[i] = aux[i];
+				}
+				delete[] aux;
+			}
+			cout << endl << "Tabela " << nume << " a fost stearsa";
+		}
+		else cout << "Tabela inexistenta";
+	}
+	void display(string nume)
+	{
+		int ok = 0, i;
+		for (i = 0; i < this->nr-1; i++)
+		{
+			if (tabele[i].getNume() == nume)
+				ok = 1;
+		}
+		if (ok)
+		{
+			for (i = 0; i < this->nr-1; i++)
+			{
+				if (tabele[i].getNume() == nume)
+				{
+					cout << tabele[i];
 				}
 			}
-			delete[] tabele;
-			nr -= 1;
-			tabele = new table[nr];
-			for (int i = 0; i < nr; i++)
-			{
-				tabele[i] = aux[i];
-			}
-			delete[] aux;
 		}
-		cout << endl << "Tabela " << nume << " a fost stearsa";
+		else cout << "Tabela nu exista";
+	}
+	void insert(string nume,string comenzi)
+	{
+		int ok = 0, i,k;
+		for (i = 0; i < this->nr-1; i++)
+		{
+			if (tabele[i].getNume() == nume)
+
+			{
+				ok = 1;
+				k = i;
+			}
+		}
+		if (ok)
+		{
+			tabele[k].insert(comenzi);
+		}
+		else cout << "Tabela nu exista";
 	}
 
 };
@@ -418,8 +762,10 @@ private:
 	string create = "CREATE TABLE";
 	string drop = "DROP TABLE";
 	string display = "DISPLAY TABLE";
+	string insert = "INSERT INTO";
+	string instructiune = "";
 public:
-	string instructiune;
+	
 	consola()
 	{
 		cout << "SGBD Tip SQL Lite" << endl;
@@ -427,6 +773,7 @@ public:
 		cout << "CREATE TABLE nume_tabela nume_coloana,tip,dimensiune,valoare_implicata nume_coloana2,tip,dimensiune,valoare" << endl;
 		cout << "DROP TABLE nume_tabela" << endl;
 		cout << "DISPLAY TABLE nume_tabela" << endl;
+		cout << "INSERT INTO nume_tabela VALUES ...";
 		cout << "Introduceti instructiune" << endl;
 	}
 	int crud(database& a)
@@ -436,11 +783,20 @@ public:
 		while (ok)
 		{
 			cout << endl;
+			if (instructiune != "")
+			{
+				cout << "Sintaxa instructiuni:" << endl;
+				cout << "CREATE TABLE nume_tabela nume_coloana,tip,dimensiune,valoare_implicata nume_coloana2,tip,dimensiune,valoare" << endl;
+				cout << "DROP TABLE nume_tabela" << endl;
+				cout << "DISPLAY TABLE nume_tabela" << endl;
+				cout << "INSERT INTO nume_tabela VALUES ...";
+				cout << "Introduceti instructiune" << endl;
+			}
 			getline(std::cin, instructiune);
 			if (instructiune == "EXIT")
 			{
 				ok = 0;
-				return 0;
+				break;
 			}
 			else
 			{
@@ -453,6 +809,16 @@ public:
 				if (poz != -1)
 				{
 					ok = crud_drop(a, poz);
+				}
+				poz = instructiune.find(display);
+				if (poz != -1)
+				{
+					ok = crud_display(a, poz);
+				}
+				poz = instructiune.find(insert);
+				if (poz != -1)
+				{
+					ok = crud_insert(a, poz);
 				}
 			}
 		}
@@ -474,6 +840,25 @@ public:
 		a.drop(instructiune);
 		return 1;
 	}
+	int crud_display(database& a, int poz)
+	{
+		instructiune.erase(poz, display.length() + 1);
+		poz = instructiune.find(" ");
+		string nume = instructiune;
+		a.display(nume);
+		return 1;
+	}
+	int crud_insert(database& a, int poz)
+	{
+		instructiune.erase(poz, insert.length() + 1);
+		poz = instructiune.find(" ");
+		string nume = instructiune.substr(0, poz);
+		instructiune.erase(0, poz + 1);
+		poz = instructiune.find(" ");
+		instructiune.erase(0, poz + 1);
+		a.insert(nume, instructiune);
+		return 1;
+	}
 
 };
-//CREATE TABLE numetabela col1,tip1,dim1,val1
+//CREATE TABLE numetabela col1,tip1,dim1,val1 col2,tip2,dim2,val2
