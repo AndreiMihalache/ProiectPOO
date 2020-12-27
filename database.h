@@ -224,6 +224,65 @@ public:
 		this->valoare_implicita = c.valoare_implicita;
 		return *this;
 	}
+	/*coloana operator+(int valoare)
+	{
+		if (valoare > 0)
+		{
+			coloana copie = *this;
+			int aux = stoi(copie.dimensiune);
+			aux += valoare;
+			copie.dimensiune = to_string(aux);
+			return copie;
+		}
+	}*/
+	coloana operator++()
+	{
+		int aux = stoi(dimensiune);
+		aux++;
+		dimensiune = to_string(aux);
+		return *this;
+	}
+	coloana operator++(int i)
+	{
+		int aux = stoi(dimensiune);
+		aux++;
+		dimensiune = to_string(aux);
+		return *this;
+	}
+	explicit operator string()
+	{
+		return dimensiune;
+	}
+	bool operator!()
+	{
+		int aux = stoi(dimensiune);
+		return aux > 0;
+	}
+	bool operator<(coloana c)
+	{
+		return this->dimensiune < c.dimensiune;
+	}
+	bool operator==(coloana c)
+	{
+		bool ok = 1;
+		if (this->nume != c.nume)
+		{
+			ok = 0;
+		}
+		if (this->tip != c.tip)
+		{
+			ok = 0;
+		}
+		if (this->dimensiune != c.dimensiune)
+		{
+			ok = 0;
+		}
+		if (this->valoare_implicita != c.valoare_implicita)
+		{
+			ok = 0;
+		}
+		return ok;
+	}
 	string getNume()
 	{
 		return this->nume;
@@ -386,6 +445,77 @@ public:
 			rand = nullptr;
 		}
 		return *this;
+	}
+	/*table operator+(int valoare)
+	{
+		if (valoare > 0)
+		{
+			table copie = *this;
+			copie.i += valoare;
+			for (int j = 0; j < valoare; j++)
+			{
+				this->newCol();
+				cin >> this->col[i + j];
+			}
+			return copie;
+		}
+	}*/
+	table operator++()
+	{
+		this->newCol();
+		cin >> this->col[this->i - 1];
+		return *this;
+	}
+	table operator++(int i)
+	{
+		table copie = *this;
+		this->newCol();
+		cin >> this->col[this->i - 1];
+		return copie;
+	}
+	coloana& operator[](int index)
+	{
+		if (index >= 0 && index < i)
+		{
+			if (i > 0)
+				return col[index];
+		}
+	}
+	explicit operator int()
+	{
+		return i;
+	}
+	bool operator!()
+	{
+		return i <= 0;
+	}
+	bool operator<(table t)
+	{
+		return this->i < t.i;
+	}
+	bool operator==(table t)
+	{
+		bool ok = 1;
+		if (this->nume != t.nume)
+		{
+			ok = 0;
+		}
+		if (this->i != t.i)
+		{
+			ok = 0;
+		}
+		else
+		{
+			if (this->i != 0)
+				for (int j = 0; j < this->i && ok == 1; j++)
+				{
+					if (!(this->col[j] == t.col[j]))
+					{
+						ok = 0;
+					}
+				}
+		}
+		return ok;
 	}
 	string getNume()
 	{
@@ -604,9 +734,129 @@ public:
 		if (this->tabele != nullptr)
 			delete[] tabele;
 	}
-	int getnr()
+	database(database& d)
+	{
+		this->nr = d.nr;
+		if (d.nr != 0)
+		{
+			this->tabele = new table[d.nr];
+			for (int i = 0; i < d.nr; i++)
+			{
+				this->tabele[i] = d.tabele[i];
+			}
+		}
+		else
+		{
+			this->tabele = nullptr;
+		}
+	}
+	database operator+(int valoare)
+	{
+		if (valoare > 0)
+		{
+			database copie = *this;
+			copie.nr += valoare;
+			return copie;
+		}
+	}
+	database operator++()
+	{
+		if (tabele == nullptr)
+		{
+			tabele = new table[nr];
+			cin >> tabele[nr - 1];
+			nr++;
+		}
+		else
+		{
+			table* aux = new table[nr];
+			for (int i = 0; i < nr - 1; i++)
+			{
+				aux[i] = tabele[i];
+			}
+			delete[] tabele;
+			tabele = new table[nr];
+			nr++;
+			for (int i = 0; i < nr - 2; i++)
+			{
+				tabele[i] = aux[i];
+			}
+			delete[] aux;
+			cin >> tabele[nr - 2];
+		}
+		return *this;
+	}
+	database operator++(int i)
+	{
+		database copie = *this;
+		if (tabele == nullptr)
+		{
+			tabele = new table[nr];
+			cin >> tabele[nr - 1];
+			nr++;
+		}
+		else
+		{
+			table* aux = new table[nr];
+			for (int i = 0; i < nr - 1; i++)
+			{
+				aux[i] = tabele[i];
+			}
+			delete[] tabele;
+			tabele = new table[nr];
+			nr++;
+			for (int i = 0; i < nr - 2; i++)
+			{
+				tabele[i] = aux[i];
+			}
+			delete[] aux;
+			cin >> tabele[nr - 2];
+		}
+		return copie;
+	}
+	table& operator[](int index)
+	{
+		if (index >= 0 && index < nr)
+		{
+			if (nr > 0)
+				return tabele[index];
+		}
+	}
+	explicit operator int()
+	{
+		return nr;
+	}
+	bool operator!()
+	{
+		return nr > 0;
+	}
+	bool operator<(database d)
+	{
+		return this->nr < d.nr;
+	}
+	bool operator==(database d)
+	{
+		bool ok = 1;
+		if (this->nr != d.nr)
+		{
+			ok = 0;
+		}
+		else
+		{
+			if (!(this->tabele == d.tabele) && this->nr > 1)
+			{
+				ok = 0;
+			}
+		}
+		return ok;
+	}
+	int getNr()
 	{
 		return this->nr;
+	}
+	void setNr(int nr)
+	{
+		this->nr = nr;
 	}
 	friend class consola;
 	void newTable()
@@ -753,7 +1003,9 @@ public:
 		}
 		else cout << "Tabela nu exista";
 	}
-
+	friend class consola;
+	friend istream& operator>>(istream&, database&);
+	friend ostream& operator<<(ostream&, database);
 };
 
 class consola
