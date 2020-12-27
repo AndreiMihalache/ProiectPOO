@@ -94,7 +94,8 @@ public:
 		else
 		{
 			int k = 0;
-			string* aux = new string[capacitate -1];
+			int v = capacitate - 1;
+			string* aux = new string[v];
 			for(int i=0;i<capacitate;i++)
 			{
 				if (i != ind)
@@ -123,7 +124,8 @@ public:
 		}
 		else
 		{
-			string* aux = new string[capacitate + 1];
+			int v = capacitate + 1;
+			string* aux = new string[v];
 			for (int i = 0; i < capacitate; i++)
 			{
 				aux[i] = valori[i];
@@ -542,7 +544,8 @@ public:
 		}
 		else
 		{
-			coloana* aux = new coloana[i + 1];
+			int v = i + 1;
+			coloana* aux = new coloana[v];
 			for (int j = 0; j < this->i; j++)
 			{
 				aux[j] = col[j];
@@ -566,7 +569,8 @@ public:
 		else
 		{
 			int contor = 0;
-			coloana *aux = new coloana[i - 1];
+			int v = i - 1;
+			coloana *aux = new coloana[v];
 			for (int j = 0; j < i; j++)
 			{
 				if (j != index)
@@ -596,18 +600,22 @@ public:
 	{
 		newCol();
 		int poz;
-		poz = instructiune.find(",");
+		poz = instructiune.find(',');
 		col[i - 1].setNume(instructiune.substr(0, poz));
-		instructiune.erase(0, poz + 1);
-		poz = instructiune.find(",");
+		poz++;
+		instructiune.erase(0, poz);
+		poz = instructiune.find(',');
 		col[i - 1].setTip(instructiune.substr(0, poz));
-		instructiune.erase(0, poz + 1);
-		poz = instructiune.find(",");
+		poz++;
+		instructiune.erase(0, poz);
+		poz = instructiune.find(',');
 		col[i - 1].setDim(instructiune.substr(0, poz));
-		instructiune.erase(0, poz + 1);
-		poz = instructiune.find(",");
+		poz++;
+		instructiune.erase(0, poz);
+		poz = instructiune.find(',');
 		col[i - 1].setVal(instructiune.substr(0, poz));
-		instructiune.erase(0, poz + 1);
+		poz++;
+		instructiune.erase(0, poz);
 	}
 	int valid(string val, int index)
 	{
@@ -640,7 +648,8 @@ public:
 		}
 		else
 		{
-			reg* aux = new reg[k + 1];
+			int v = k + 1;
+			reg* aux = new reg[v];
 			for (int j = 0; j < this->k; j++)
 			{
 				aux[j] = rand[j];
@@ -666,14 +675,15 @@ public:
 		int poz,index=-1;
 		while (values != "")
 		{
-			poz = values.find(",");
+			poz = values.find(',');
 			val = values.substr(0, poz);
 			index++;
 			if (valid(val, index) == 1)
 			{
 				rand[k - 1].append(val);
 			}
-			values.erase(0, poz + 1);
+			poz++;
+			values.erase(0, poz);
 		}
 	}
 
@@ -894,10 +904,11 @@ public:
 			this->tabele[nr - 1].setNume(nume);
 			while (comenzi != "")
 			{
-				poz = comenzi.find(" ");
+				poz = comenzi.find(' ');
 				instr = comenzi.substr(0, poz);
 				tabele[nr - 1].adauga_coloana(instr);
-				comenzi.erase(0, poz + 1);
+				poz++;
+				comenzi.erase(0, poz);
 			}
 			nr++;
 			cout << "Tabela creata" << endl;
@@ -915,10 +926,11 @@ public:
 				tabele[nr - 1].setNume(nume);
 				while (comenzi != "")
 				{
-					poz = comenzi.find(" ");
+					poz = comenzi.find(' ');
 					instr = comenzi.substr(0, poz);
 					tabele[nr - 1].adauga_coloana(instr);
-					comenzi.erase(0, poz + 1);
+					poz++;
+					comenzi.erase(0, poz);
 				}
 				nr++;
 				cout << "Tabela creata";
@@ -942,7 +954,8 @@ public:
 			}
 			else
 			{
-				table* aux = new table[nr - 1];
+				int v = nr - 1;
+				table* aux = new table[v];
 				int j = 0;
 				for (int i = 0; i < nr - 1; i++)
 				{
@@ -1080,9 +1093,10 @@ public:
 	{
 
 		instructiune.erase(poz, create.length() + 1);
-		poz = instructiune.find(" ");
+		poz = instructiune.find(' ');
 		string nume = instructiune.substr(0, poz);
-		instructiune.erase(0, poz + 1);
+		poz++;
+		instructiune.erase(0, poz);
 		a.create(nume, instructiune);
 		return 1;
 	}
@@ -1095,7 +1109,7 @@ public:
 	int crud_display(database& a, int poz)
 	{
 		instructiune.erase(poz, display.length() + 1);
-		poz = instructiune.find(" ");
+		poz = instructiune.find(' ');
 		string nume = instructiune;
 		a.display(nume);
 		return 1;
@@ -1103,15 +1117,17 @@ public:
 	int crud_insert(database& a, int poz)
 	{
 		instructiune.erase(poz, insert.length() + 1);
-		poz = instructiune.find(" ");
+		poz = instructiune.find(' ');
 		string nume = instructiune.substr(0, poz);
-		instructiune.erase(0, poz + 1);
-		poz = instructiune.find(" ");
-		instructiune.erase(0, poz + 1);
+		poz++;
+		instructiune.erase(0, poz);
+		poz = instructiune.find(' ');
+		poz++;
+		instructiune.erase(0, poz);
 		a.insert(nume, instructiune);
 		return 1;
 	}
-
 };
 //CREATE TABLE numetabela col1,tip1,dim1,val1 col2,tip2,dim2,val2
+//CREATE TABLE numetabela ((col1,tip1,dim1,val1), (col2,tip2,dim2,val2))
 //un com
