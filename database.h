@@ -850,7 +850,7 @@ public:
 				{
 					for (int x = 0; x < contor; x++)
 					{
-						cout <<
+						cout << rand[j].valori[x] << "\t\t";
 					}
 				}
 			}
