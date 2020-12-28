@@ -1254,6 +1254,8 @@ private:
 	string select = "SELECT";
 	string instructiune = "";
 	const char* aplicatie = "SGBD Tip Sqlite";
+	int cnt = 0;
+	static string comenzi[500];
 public:
 
 	consola()
@@ -1334,6 +1336,8 @@ public:
 				{
 					ok = crud_select(a, poz);
 				}
+				comenzi[cnt] = instructiune;
+				cnt++;
 			}
 		}
 		return 1;
@@ -1423,6 +1427,33 @@ public:
 		}
 		a.select(nume, cols, cond);
 		return 1;
+	}
+	void afisare()
+	{
+		if (comenzi != nullptr)
+		{
+			cout << getComenzi();
+		}
+		else
+		{
+			cout << "Nu exista instructiuni" << endl;
+		}
+	}
+	string* getComenzi()
+	{
+		if (comenzi != nullptr)
+		{
+			string* copie = new string[cnt];
+			for (int i = 0; i < cnt; i++)
+			{
+				copie[i] = comenzi[i];
+			}
+			return copie;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 };
