@@ -1,4 +1,4 @@
-#include<iostream>
+﻿#include<iostream>
 #include <string>
 #include <list>
 using namespace std;
@@ -43,9 +43,9 @@ public:
 	}
 	reg operator=(reg& r)
 	{
-		if (this->valori != nullptr)
+		if (valori != nullptr)
 		{
-			delete[]this->valori;
+			delete[]valori;
 		}
 		this->contor = r.contor;
 		this->capacitate = r.capacitate;
@@ -161,6 +161,7 @@ public:
 	}
 	friend istream& operator>>(istream&, reg&);
 	friend ostream& operator<<(ostream&, reg);
+	friend class table;
 };
 
 istream& operator>>(istream& i, reg& r)
@@ -596,16 +597,16 @@ public:
 	{
 		newCol();
 		int poz;
-		poz = instructiune.find(",");
+		poz = instructiune.find(',');
 		col[i - 1].setNume(instructiune.substr(0, poz));
 		instructiune.erase(0, poz + 1);
-		poz = instructiune.find(",");
+		poz = instructiune.find(',');
 		col[i - 1].setTip(instructiune.substr(0, poz));
 		instructiune.erase(0, poz + 1);
-		poz = instructiune.find(",");
+		poz = instructiune.find(',');
 		col[i - 1].setDim(instructiune.substr(0, poz));
 		instructiune.erase(0, poz + 1);
-		poz = instructiune.find(",");
+		poz = instructiune.find(',');
 		col[i - 1].setVal(instructiune.substr(0, poz));
 		instructiune.erase(0, poz + 1);
 	}
@@ -635,8 +636,7 @@ public:
 		{
 			k++;
 			rand = new reg[k];
-			rand[0].setCap(i-1);
-			rand[0].addval();
+			rand[0].setCap(i);
 		}
 		else
 		{
@@ -650,10 +650,9 @@ public:
 			rand = new reg[k];
 			for (int j = 0; j < this->k - 1; j++)
 			{
-				//rand[j].setCap(i-1);
-				//rand[j].addval();
 				rand[j] = aux[j];
 			}
+			rand[k - 1].setCap(i);
 			delete[] aux;
 		}
 
@@ -675,8 +674,188 @@ public:
 			}
 			values.erase(0, poz + 1);
 		}
+		if (rand[k - 1].contor < rand[k - 1].capacitate)
+		{
+			for (int j = rand[k - 1].contor; j < rand[k - 1].capacitate; j++)
+			{
+				rand[k - 1].append(col[rand[k - 1].contor].valoare_implicita);
+			}
+		}
 	}
-
+	void del(string instr)
+	{
+		if (k && i)
+		{
+			int poz;
+			poz = instr.find(' ');
+			string ncol, val;
+			ncol = instr.substr(0, poz);
+			poz = poz + 3;
+			instr.erase(0, poz);
+			poz = -1;
+			poz = instr.find(' ');
+			if (poz == -1)
+			{
+				val = instr;
+			}
+			else val = instr.substr(0, poz);
+			int index;
+			for (int j = 0; j < i; j++)
+			{
+				if (col[j].getNume() == ncol)
+				{
+					index = j;
+				}
+			}
+			if (index < 0)
+			{
+				cout << endl << "Coloana nu exista";
+			}
+			else
+			{
+				for (int j = 0; j < k; j++)
+				{
+					if (rand[j].valori[index] == val)
+					{
+						if (k == 1)
+						{
+							delete[] rand;
+						}
+						else
+						{
+							reg* aux = new reg[k - 1];
+							int contor = 0;
+							for (int x = 0; x < k; x++)
+							{
+								if (x != j)
+								{
+									aux[contor] = rand[x];
+									contor++;
+								}
+							} 
+							k--;
+							delete[] rand;
+							rand = new reg[k];
+							for (int x = 0; x < k; x++)
+							{
+								rand[x] = aux[x];
+							}
+							delete[] aux;
+						}
+						break;
+					}
+				}
+			}
+		}
+	}
+	void update(string p1, string p2)
+	{
+		string c1, v1, c2, v2;
+		int poz;
+		poz = p1.find(' ');
+		c1 = p1.substr(0, poz);
+		poz = poz + 3;
+		p1.erase(0, poz);
+		v1 = p1;
+		poz = p2.find(' ');
+		c2 = p2.substr(0, poz);
+		poz = poz + 3;
+		p2.erase(0, poz);
+		v2 = p2;
+		int index1=-1,index2=-1;
+		for (int j = 0; j < i; j++)
+		{
+			if (col[j].getNume() == c2)
+			{
+				index2 = j;
+			}
+			if (col[j].getNume() == c1)
+			{
+				index1 = j;
+			}
+		}
+		if (index1>=0 && index2>=0)
+		{
+			for (int j = 0; j < k; j++)
+			{
+				if (rand[j].valori[index2] == v2)
+				{
+					rand[j].valori[index1] = v1;
+				}
+			}
+		}
+		else
+		{
+			cout << "Una din coloane nu exista";
+		}
+	}
+	void select(string cols, string cond)
+	{
+		cout << endl;
+		if (cond == "")
+		{
+			if (cols == "ALL")
+			{
+				for (int j = 0; j < i; j++)
+				{
+					cout << col[j].nume << "\t\t";
+				}
+				for (int x = 0; x < k; x++)
+				{
+					cout << endl;
+					for (int z = 0; z < i; z++)
+					{
+						cout << rand[x].valori[z] << "\t\t";
+					}
+				}
+			}
+			else
+			{
+				cols.erase(0);
+				cols.erase(cols.length() - 1);
+				int *indexes = new int[i];
+				int contor = 0;
+				while (cols != "")
+				{
+					string aux;
+					int poz;
+					poz = cols.find(',');
+					aux = cols.substr(0, poz);
+					for (int j = 0; j < i; j++)
+					{
+						if (col[j].nume == aux)
+						{
+							indexes[contor] = j;
+							contor++;
+						}
+					}
+				}
+				for (int g = 0; g < contor - 1; g++)
+				{
+					for (int h = 0; h < contor; h++)
+					{
+						if (indexes[h] > indexes[g])
+						{
+							swap(indexes[h], indexes[g]);
+						}
+					}
+				}
+				cout << endl;
+				for (int j = 0; j < contor; j++)
+				{
+					cout << col[j].nume << "\t\t";
+				}
+				cout << endl;
+				for (int j = 0; j < k; j++)
+				{
+					for (int x = 0; x < contor; x++)
+					{
+						cout << rand[j].valori[x] << "\t\t";
+					}
+				}
+			}
+		}
+	}
 	friend class database;
 
 	friend istream& operator>>(istream&, table&);
@@ -987,7 +1166,7 @@ public:
 	}
 	void insert(string nume,string comenzi)
 	{
-		int ok = 0, i,k;
+		int ok = 0, i,k; 
 		for (i = 0; i < this->nr-1; i++)
 		{
 			if (tabele[i].getNume() == nume)
@@ -1003,9 +1182,64 @@ public:
 		}
 		else cout << "Tabela nu exista";
 	}
+	void del(string nume, string comenzi)
+	{
+		int ok = 0, i,k; 
+		for (i = 0; i < this->nr-1; i++)
+		{
+			if (tabele[i].getNume() == nume)
+
+			{
+				ok = 1;
+				k = i;
+			}
+		}
+		if (ok)
+		{
+			tabele[k].del(comenzi);
+		}
+		else cout << "Tabela nu exista";
+	}
+	void update(string nume, string p1, string p2)
+	{
+		int ok = 0, i, k;
+		for (i = 0; i < this->nr - 1; i++)
+		{
+			if (tabele[i].getNume() == nume)
+
+			{
+				ok = 1;
+				k = i;
+			}
+		}
+		if (ok)
+		{
+			tabele[k].update(p1,p2);
+		}
+		else cout << "Tabela nu exista";
+	}
+	void select(string nume, string cols, string cond)
+	{
+		int ok = 0, i, k;
+		for (i = 0; i < this->nr - 1; i++)
+		{
+			if (tabele[i].getNume() == nume)
+
+			{
+				ok = 1;
+				k = i;
+			}
+		}
+		if (ok)
+		{
+			tabele[k].select(cols, cond);
+		}
+		else cout << "Tabela nu exista";
+	}
 	friend class consola;
 	friend istream& operator>>(istream&, database&);
 	friend ostream& operator<<(ostream&, database);
+	
 };
 
 class consola
@@ -1015,19 +1249,29 @@ private:
 	string drop = "DROP TABLE";
 	string display = "DISPLAY TABLE";
 	string insert = "INSERT INTO";
+	string del = "DELETE FROM";
+	string update = "UPDATE";
+	string select = "SELECT";
 	string instructiune = "";
+	const char* aplicatie = "SGBD Tip Sqlite";
 public:
 	
 	consola()
 	{
-		cout << "SGBD Tip SQL Lite" << endl;
+		cout << aplicatie << endl;
 		cout << "Sintaxa instructiuni:" << endl;
 		cout << "CREATE TABLE nume_tabela nume_coloana,tip,dimensiune,valoare_implicata nume_coloana2,tip,dimensiune,valoare" << endl;
 		cout << "DROP TABLE nume_tabela" << endl;
 		cout << "DISPLAY TABLE nume_tabela" << endl;
-		cout << "INSERT INTO nume_tabela VALUES ...";
+		cout << "INSERT INTO nume_tabela VALUES ..."<<endl;
+		cout << "DELETE FROM nume_tabela WHERE nume_coloana = valoare" << endl;
+		cout << "UPDATE nume_tabela SET nume_coloana = valoare WHERE nume_coloana = valoare" << endl;
+		cout << "SELECT (cel_putin_o_coloana, ...) | ALL FROM nume_tabela [WHERE nume_coloana = valoare]" << endl;
 		cout << "Introduceti instructiune" << endl;
 	}
+	//SELECT (cel_putin_o_coloana, ...) | ALL FROM nume_tabela [WHERE nume_coloană = valoare] - clauza WHERE este opțională
+	//SELECT (v1,v2) FROM nume_tabela WHERE .. 
+
 	int crud(database& a)
 	{
 
@@ -1041,7 +1285,10 @@ public:
 				cout << "CREATE TABLE nume_tabela nume_coloana,tip,dimensiune,valoare_implicata nume_coloana2,tip,dimensiune,valoare" << endl;
 				cout << "DROP TABLE nume_tabela" << endl;
 				cout << "DISPLAY TABLE nume_tabela" << endl;
-				cout << "INSERT INTO nume_tabela VALUES ...";
+				cout << "INSERT INTO nume_tabela VALUES ..."<<endl;
+				cout << "DELETE FROM nume_tabela WHERE nume_coloana = valoare"<<endl;
+				cout << "UPDATE nume_tabela SET nume_coloana = valoare WHERE nume_coloana = valoare" << endl;
+				cout << "SELECT (cel_putin_o_coloana, ...) | ALL FROM nume_tabela [WHERE nume_coloana = valoare]" << endl;
 				cout << "Introduceti instructiune" << endl;
 			}
 			getline(std::cin, instructiune);
@@ -1071,6 +1318,21 @@ public:
 				if (poz != -1)
 				{
 					ok = crud_insert(a, poz);
+				}
+				poz = instructiune.find(del);
+				if (poz != -1)
+				{
+					ok = crud_delete(a, poz);
+				}
+				poz = instructiune.find(update);
+				if (poz != -1)
+				{
+					ok = crud_update(a, poz);
+				}
+				poz = instructiune.find(select);
+				if (poz != -1)
+				{
+					ok = crud_select(a, poz);
 				}
 			}
 		}
@@ -1111,7 +1373,58 @@ public:
 		a.insert(nume, instructiune);
 		return 1;
 	}
+	int crud_delete(database& a, int poz)
+	{
+		instructiune.erase(poz, insert.length() + 1);
+		poz = instructiune.find(" ");
+		string nume = instructiune.substr(0, poz);
+		instructiune.erase(0, poz + 1);
+		poz = instructiune.find(" ");
+		instructiune.erase(0, poz + 1);
+		a.del(nume, instructiune);
+		return 1;
+	}
+	
+	int crud_update(database& a, int poz)
+	{
+		string p1, p2;
+		instructiune.erase(poz, update.length() + 1);
+		poz = instructiune.find(" ");
+		string nume = instructiune.substr(0, poz);
+		instructiune.erase(0, poz + 1);
+		poz = instructiune.find(" ");
+		instructiune.erase(0, poz + 1);
+		a.del(nume, instructiune);
+		poz = instructiune.find("WHERE");
+		p1 = instructiune.substr(0, poz);
+		instructiune.erase(0, poz + 6);
+		p2 = instructiune;
+		a.update(nume,p1, p2);
+		return 1;
+	}
+	int crud_select(database& a, int poz)
+	{
+		string cols, nume, cond;
+		instructiune = instructiune + ' ';
+		instructiune.erase(poz, select.length() + 1);
+		poz = instructiune.find("FROM");
+		cols = instructiune.substr(0, poz);
+		instructiune.erase(0, poz + 5);
+		poz = instructiune.find(' ');
+		instructiune.erase(0, poz+1);
+		if (instructiune != "")
+		{
+			poz = instructiune.find(' ');
+			cond = instructiune.substr(0, poz);
+		}
+		else
+		{
+			cond = "";
+		}
+		a.select(nume, cols, cond);
+		return 1;
+	}
 
 };
-//CREATE TABLE numetabela col1,tip1,dim1,val1 col2,tip2,dim2,val2
-//un com
+//CREATE TABLE numetabela col1,int,10,0 col2,int,10,0
+
