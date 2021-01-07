@@ -599,15 +599,16 @@ public:
 	{
 		newCol();
 		int poz;
+		instructiune += ',';
 		poz = instructiune.find(',');
 		col[i - 1].setNume(instructiune.substr(0, poz));
-		instructiune.erase(0, poz + 1);
+		instructiune.erase(0, poz + 2);
 		poz = instructiune.find(',');
 		col[i - 1].setTip(instructiune.substr(0, poz));
-		instructiune.erase(0, poz + 1);
+		instructiune.erase(0, poz + 2);
 		poz = instructiune.find(',');
 		col[i - 1].setDim(instructiune.substr(0, poz));
-		instructiune.erase(0, poz + 1);
+		instructiune.erase(0, poz + 2);
 		poz = instructiune.find(',');
 		col[i - 1].setVal(instructiune.substr(0, poz));
 		instructiune.erase(0, poz + 1);
@@ -617,17 +618,17 @@ public:
 		int ok = -1;
 		if (col[index].tip == "int" && ok != 1)
 		{
-			if (to_string(stoi(val)) == val && val.size() < stoi(col[index].dimensiune))
+			if (to_string(stoi(val)) == val && val.size() <= stoi(col[index].dimensiune))
 				return ok = 1;
 		}
 		if (col[index].tip == "float" && ok != 1)
 		{
-			if (stof(to_string(stof(val))) == stof(val) && val.size() < stoi(col[index].dimensiune))
+			if (stof(to_string(stof(val))) == stof(val) && val.size() <= stoi(col[index].dimensiune))
 				return ok = 1;
 		}
 		if (col[index].tip == "text" && ok != 1)
 		{
-			if (val.size() < stoi(col[index].dimensiune))
+			if (val.size() <= stoi(col[index].dimensiune))
 				ok = 1;
 		}
 		return ok;
@@ -663,7 +664,9 @@ public:
 	{
 		addrand();
 		string val;
-		values = values + ",";
+		values.erase(0, 1);
+		values.erase(values.length() - 1);
+		values = values + ", ";
 		int poz, index = -1;
 		while (values != "")
 		{
@@ -674,7 +677,7 @@ public:
 			{
 				rand[k - 1].append(val);
 			}
-			values.erase(0, poz + 1);
+			values.erase(0, poz + 2);
 		}
 		if (rand[k - 1].contor < rand[k - 1].capacitate)
 		{
@@ -1014,7 +1017,7 @@ istream& operator>>(istream& i, table& t)
 
 ostream& operator<<(ostream& o, table t)
 {
-	o << "Nume : " << t.getNume() << endl;
+	o << "Nume tabela: " << t.getNume() << endl;
 	o << "Numar coloane : " << t.getI() << endl;
 	for (int j = 0; j < t.i; j++)
 	{
@@ -1193,16 +1196,19 @@ public:
 		int ok = 1;
 		string instr;
 		int poz;
-		comenzi += ' ';
+		comenzi += ", ";
 		if (nr == 1)
 		{
 			this->tabele[nr - 1].setNume(nume);
+			comenzi.erase(comenzi.length() - 1);
+			comenzi.erase(0, 1);
 			while (comenzi != "")
 			{
-				poz = comenzi.find(" ");
+				poz = comenzi.find(")");
 				instr = comenzi.substr(0, poz);
+				instr.erase(0, 1);
 				tabele[nr - 1].adauga_coloana(instr);
-				comenzi.erase(0, poz + 1);
+				comenzi.erase(0, poz + 3);
 			}
 			nr++;
 			cout << "Tabela creata" << endl;
@@ -1217,16 +1223,19 @@ public:
 
 			if (ok)
 			{
-				tabele[nr - 1].setNume(nume);
+				this->tabele[nr - 1].setNume(nume);
+				comenzi.erase(comenzi.length() - 1);
+				comenzi.erase(0, 1);
 				while (comenzi != "")
 				{
-					poz = comenzi.find(" ");
+					poz = comenzi.find(")");
 					instr = comenzi.substr(0, poz);
+					instr.erase(0, 1);
 					tabele[nr - 1].adauga_coloana(instr);
-					comenzi.erase(0, poz + 1);
+					comenzi.erase(0, poz + 3);
 				}
 				nr++;
-				cout << "Tabela creata";
+				cout << "Tabela creata" << endl;
 			}
 			else cout << "Tabela existenta";
 		}
@@ -1464,10 +1473,10 @@ public:
 	{
 		cout << aplicatie << endl;
 		cout << "Sintaxa instructiuni:" << endl;
-		cout << "CREATE TABLE nume_tabela nume_coloana,tip,dimensiune,valoare_implicata nume_coloana2,tip,dimensiune,valoare" << endl;
+		cout << "CREATE TABLE nume_tabela ((nume_coloana, tip, dimensiune, valoare_implicita), (nume_coloana2, tip, dimensiune, valoare_implicita)...)" << endl;
 		cout << "DROP TABLE nume_tabela" << endl;
 		cout << "DISPLAY TABLE nume_tabela" << endl;
-		cout << "INSERT INTO nume_tabela VALUES ..." << endl;
+		cout << "INSERT INTO nume_tabela VALUES (val1, val2, ...)" << endl;
 		cout << "DELETE FROM nume_tabela WHERE nume_coloana = valoare" << endl;
 		cout << "UPDATE nume_tabela SET nume_coloana = valoare WHERE nume_coloana = valoare" << endl;
 		cout << "SELECT (cel_putin_o_coloana, ...) | ALL FROM nume_tabela [WHERE nume_coloana = valoare]" << endl;
@@ -1485,11 +1494,12 @@ public:
 			cout << endl;
 			if (instructiune != "")
 			{
+				cout << aplicatie << endl;
 				cout << "Sintaxa instructiuni:" << endl;
-				cout << "CREATE TABLE nume_tabela nume_coloana,tip,dimensiune,valoare_implicata nume_coloana2,tip,dimensiune,valoare" << endl;
+				cout << "CREATE TABLE nume_tabela ((nume_coloana, tip, dimensiune, valoare_implicita), (nume_coloana2, tip, dimensiune, valoare_implicita)...)" << endl;
 				cout << "DROP TABLE nume_tabela" << endl;
 				cout << "DISPLAY TABLE nume_tabela" << endl;
-				cout << "INSERT INTO nume_tabela VALUES ..." << endl;
+				cout << "INSERT INTO nume_tabela VALUES (val1, val2, ...)" << endl;
 				cout << "DELETE FROM nume_tabela WHERE nume_coloana = valoare" << endl;
 				cout << "UPDATE nume_tabela SET nume_coloana = valoare WHERE nume_coloana = valoare" << endl;
 				cout << "SELECT (cel_putin_o_coloana, ...) | ALL FROM nume_tabela [WHERE nume_coloana = valoare]" << endl;
