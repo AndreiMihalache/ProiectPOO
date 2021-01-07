@@ -1,6 +1,8 @@
 ﻿#include<iostream>
 #include <string>
-#include <list>
+#include<iomanip>
+#include <fstream>
+
 using namespace std;
 
 class reg
@@ -620,7 +622,7 @@ public:
 		}
 		if (col[index].tip == "float" && ok != 1)
 		{
-			if (to_string(stof(val)) == val && val.size() < stoi(col[index].dimensiune))
+			if (stof(to_string(stof(val))) == stof(val) && val.size() < stoi(col[index].dimensiune))
 				return ok = 1;
 		}
 		if (col[index].tip == "text" && ok != 1)
@@ -789,6 +791,28 @@ public:
 			cout << "Una din coloane nu exista";
 		}
 	}
+	void center(string str)
+	{
+		int size;
+		string aux;
+		if (str.length() > 12) {
+			aux = str.substr(0, 12);
+			size = 0;
+		}
+		else
+		{
+			aux = str;
+			size = 12 - str.length();
+		}
+		if (size == 0)
+		{
+			cout << aux << '  ';
+		}
+		else
+		{
+			cout << aux << string(size, ' ');
+		}
+	}
 	void select(string cols, string cond)
 	{
 		cout << endl;
@@ -796,23 +820,26 @@ public:
 		{
 			if (cols == "ALL")
 			{
+				cout << string(12 * i, '-') << endl;;
 				for (int j = 0; j < i; j++)
 				{
-					cout << col[j].nume << "\t\t";
+					center(col[j].nume);
 				}
+				cout << endl<<string(12 * i, '-') << endl;
 				for (int x = 0; x < k; x++)
 				{
 					cout << endl;
 					for (int z = 0; z < i; z++)
 					{
-						cout << rand[x].valori[z] << "\t\t";
+						center(rand[x].valori[z]);
 					}
 				}
 			}
 			else
 			{
-				cols.erase(0);
+				cols.erase(0,1);
 				cols.erase(cols.length() - 1);
+				cols = cols + ", ";
 				int* indexes = new int[i];
 				int contor = 0;
 				while (cols != "")
@@ -821,6 +848,7 @@ public:
 					int poz;
 					poz = cols.find(',');
 					aux = cols.substr(0, poz);
+					cols.erase(0, poz + 2);
 					for (int j = 0; j < i; j++)
 					{
 						if (col[j].nume == aux)
@@ -855,7 +883,105 @@ public:
 				}
 			}
 		}
+		else
+		{	
+			string arg1;
+			string arg2;
+			int poz;
+			poz = cond.find(' ');
+			arg1 = cond.substr(0, poz);
+			cond.erase(0, poz + 2);
+			arg2 = cond;
+			int ok1=0,ok2=0;
+			int index;
+			for (int j = 0; j < i; j++)
+			{
+				if (col[j].nume == arg1)
+				{
+					ok1 = 1; index = j;
+				}
+			}
+			for (int j = 0; j < k; j++)
+			{
+				if (rand[j].valori[index]==arg2)
+				{
+					ok2 = 1;
+				}
+			}
+			if (ok1 && ok2)
+			{
+				if (cols == "ALL")
+				{
+					for (int j = 0; j < i; j++)
+					{
+						cout << col[j].nume << "\t\t";
+					}
+					for (int x = 0; x < k; x++)
+					{
+						cout << endl;
+						for (int z = 0; z < i; z++)
+						{
+							if(rand[x].valori[index]==arg2)
+							cout << rand[x].valori[z] << "\t\t";
+						}
+					}
+				}
+				else
+				{
+					cols.erase(0, 1);
+					cols.erase(cols.length() - 1);
+					cols = cols + ", ";
+					int* indexes = new int[i];
+					int contor = 0;
+					while (cols != "")
+					{
+						string aux;
+						int poz;
+						poz = cols.find(',');
+						aux = cols.substr(0, poz);
+						cols.erase(0, poz + 2);
+						for (int j = 0; j < i; j++)
+						{
+							if (col[j].nume == aux)
+							{
+								indexes[contor] = j;
+								contor++;
+							}
+						}
+					}
+					for (int g = 0; g < contor - 1; g++)
+					{
+						for (int h = 0; h < contor; h++)
+						{
+							if (indexes[h] > indexes[g])
+							{
+								swap(indexes[h], indexes[g]);
+							}
+						}
+					}
+					cout << endl;
+					for (int j = 0; j < contor; j++)
+					{
+						cout << col[j].nume << "\t\t";
+					}
+					cout << endl;
+					for (int j = 0; j < k; j++)
+					{
+						for (int x = 0; x < contor; x++)
+						{
+							if (rand[x].valori[index] == arg2)
+							cout << rand[j].valori[x] << "\t\t";
+						}
+					}
+				}
+			}
+			else
+			{
+				cout << "Nu exista inregistrari care sa respecte conditia";
+			}
+		}
 	}
+
 	friend class database;
 
 	friend istream& operator>>(istream&, table&);
@@ -1108,7 +1234,7 @@ public:
 	void drop(string nume)
 	{
 		int ok = 0, i;
-		for (i = 0; i < this->nr; i++)
+		for (i = 0; i < this->nr-1; i++)
 		{
 			if (tabele[i].getNume() == nume)
 				ok = 1;
@@ -1242,6 +1368,45 @@ public:
 
 };
 
+class writefile
+{
+private:
+	
+public:
+	writefile()
+	{
+	
+	}
+	writefile(string s)
+	{
+		
+	}
+	~writefile()
+	{
+
+	}
+}; 
+
+class readfile
+{
+private:
+
+public:
+	readfile()
+	{
+
+	}
+	readfile(string s)
+	{
+
+	}
+	~readfile()
+	{
+
+
+	};
+};
+
 class consola
 {
 private:
@@ -1255,7 +1420,7 @@ private:
 	string instructiune = "";
 	const char* aplicatie = "SGBD Tip Sqlite";
 	int cnt = 0;
-	static string comenzi[500];
+	string comenzi[500];
 public:
 
 	consola()
@@ -1412,14 +1577,16 @@ public:
 		instructiune = instructiune + ' ';
 		instructiune.erase(poz, select.length() + 1);
 		poz = instructiune.find("FROM");
-		cols = instructiune.substr(0, poz);
+		cols = instructiune.substr(0, poz-1);
 		instructiune.erase(0, poz + 5);
 		poz = instructiune.find(' ');
+		nume = instructiune.substr(0, poz);
 		instructiune.erase(0, poz + 1);
 		if (instructiune != "")
+
 		{
-			poz = instructiune.find(' ');
-			cond = instructiune.substr(0, poz);
+			instructiune.erase(0, poz + 1);
+			cond = instructiune;
 		}
 		else
 		{
@@ -1457,5 +1624,6 @@ public:
 	}
 
 };
-//CREATE TABLE numetabela col1,int,10,0 col2,int,10,0
+//CREATE TABLE tab1 coltxt,text,10,nimic colfloat,float,10,0 colint,int,10,0
+//INSERT INTO tab1 VALUES da,5,6
 

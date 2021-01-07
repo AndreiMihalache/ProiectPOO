@@ -1,4 +1,5 @@
-C:\Users\andre\source\repos\ProiectPOO\x64\Debug\Proiect.exe
-C:\Users\andre\source\repos\ProiectPOO\x64\Debug\Proiect.pdb
 C:\Users\mirce\Desktop\Facultate\POO\Proiect\x64\Debug\Proiect.exe
 C:\Users\mirce\Desktop\Facultate\POO\Proiect\x64\Debug\Proiect.pdb
+C:\Users\andre\source\repos\ProiectPOO\x64\Debug\Proiect.cpp
+C:\Users\andre\source\repos\ProiectPOO\x64\Debug\Proiect.exe
+C:\Users\andre\source\repos\ProiectPOO\x64\Debug\Proiect.pdb
