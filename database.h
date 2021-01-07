@@ -1196,12 +1196,13 @@ public:
 		int ok = 1;
 		string instr;
 		int poz;
+		comenzi.erase(comenzi.length() - 1);
+		comenzi.erase(0, 1);
 		comenzi += ", ";
 		if (nr == 1)
 		{
 			this->tabele[nr - 1].setNume(nume);
-			comenzi.erase(comenzi.length() - 1);
-			comenzi.erase(0, 1);
+			
 			while (comenzi != "")
 			{
 				poz = comenzi.find(")");
@@ -1400,18 +1401,18 @@ class readfile
 {
 private:
 	ifstream f;
-	string a;
+	string str;
 public:
-	readfile()
+	readfile(database &a)
 	{
 		f.open("cfg.txt", ios::in);	
-		getline(f, a);
-		if (a == "config")
+		getline(f, str);
+		if (str == "config")
 		{
-			readconfig();
+			readconfig(a);
 		}
 	}
-	readfile(string s)
+	readfile(string s, database& a)
 	{
 		int poz=-1;
 		poz = s.find('.bin');
@@ -1421,30 +1422,30 @@ public:
 		}
 		else
 			f.open(s, ios::in);
-		string a;
-		getline(f, a);	
-		if(a=="create")
+		getline(f, str);	
+		if(str=="create")
 		{
 			
 		}
 		else
-			if (a == "insert")
-			{
-
-			}
-	}
-	void readconfig()
-	{
-		string a, nume, coloane;
-		int poz;
-		while (f.peek() != NULL)
+		if (str == "insert")
 		{
-			getline(f, a);
-			poz = a.find(' ');
-			nume = a.substr(0, poz);
-			a.erase(0, poz + 1);
-			coloane = a;
+
 		}
+	}
+	void readconfig(database& a)
+	{
+		string  nume, coloane;
+		int poz;
+		while (getline(f, str))
+		{
+			poz = str.find(' ');
+			nume = str.substr(0, poz);
+			str.erase(0, poz + 1);
+			coloane = str;
+			a.create(nume, coloane);
+		}
+
 	}
 	~readfile()
 	{
