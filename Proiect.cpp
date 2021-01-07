@@ -7,16 +7,15 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	/*string* s = new string[argc];
+	string* s = new string[argc];
 	for (int i = 0; i < argc; i++)
 	{
 		s[i] = argv[i];
 	}
-	s[0] = "cfg.txt";
 	database a;
+	readfile cfg(a);
 	consola c;
-	c.crud(a); */
-	readfile cfg;
+	c.crud(a);
 	return 0; 
 	
 }
