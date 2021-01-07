@@ -1,2 +1,2 @@
 config
-nume1 col1,tip1,dim1,val1
+nume1 ((col1, int, 10, 0), (col2, int, 10, 0))
