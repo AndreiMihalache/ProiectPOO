@@ -7,7 +7,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	string* s = new string[argc];
+	/*string* s = new string[argc];
 	for (int i = 0; i < argc; i++)
 	{
 		s[i] = argv[i];
@@ -15,7 +15,8 @@ int main(int argc, char** argv)
 	s[0] = "cfg.txt";
 	database a;
 	consola c;
-	c.crud(a); 
+	c.crud(a); */
+	readfile cfg;
 	return 0; 
 	
 }

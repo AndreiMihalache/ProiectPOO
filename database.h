@@ -1390,15 +1390,52 @@ public:
 class readfile
 {
 private:
-
+	ifstream f;
+	string a;
 public:
 	readfile()
 	{
-
+		f.open("cfg.txt", ios::in);	
+		getline(f, a);
+		if (a == "config")
+		{
+			readconfig();
+		}
 	}
 	readfile(string s)
 	{
+		int poz=-1;
+		poz = s.find('.bin');
+		if (poz!=-1)
+		{
+			f.open(s, ios::in | ios::binary);
+		}
+		else
+			f.open(s, ios::in);
+		string a;
+		getline(f, a);	
+		if(a=="create")
+		{
+			
+		}
+		else
+			if (a == "insert")
+			{
 
+			}
+	}
+	void readconfig()
+	{
+		string a, nume, coloane;
+		int poz;
+		while (f.peek() != NULL)
+		{
+			getline(f, a);
+			poz = a.find(' ');
+			nume = a.substr(0, poz);
+			a.erase(0, poz + 1);
+			coloane = a;
+		}
 	}
 	~readfile()
 	{
