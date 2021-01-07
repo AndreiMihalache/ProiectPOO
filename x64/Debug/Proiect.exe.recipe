@@ -2,10 +2,14 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Users\mirce\Desktop\Facultate\POO\Proiect\x64\Debug\Proiect.exe</FullPath>
+      <FullPath>C:\Users\andre\source\repos\ProiectPOO\x64\Debug\Proiect.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
-  <ContentFiles />
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\Users\andre\source\repos\ProiectPOO\Proiect.cpp</FullPath>
+    </ContentFile>
+  </ContentFiles>
   <SatelliteDlls />
   <NonRecipeFileRefs />
 </Project>
