@@ -1,0 +1,2 @@
+config
+nume1 col1,tip1,dim1,val1
