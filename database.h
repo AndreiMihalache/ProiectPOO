@@ -861,29 +861,33 @@ public:
 						}
 					}
 				}
-				for (int g = 0; g < contor - 1; g++)
+				if (contor > 0)
 				{
-					for (int h = 0; h < contor; h++)
+					for (int g = 0; g < contor - 1; g++)
 					{
-						if (indexes[h] > indexes[g])
+						for (int h = 0; h < contor; h++)
 						{
-							swap(indexes[h], indexes[g]);
+							if (indexes[h] > indexes[g])
+							{
+								swap(indexes[h], indexes[g]);
+							}
+						}
+					}
+					cout << endl;
+					for (int j = 0; j < contor; j++)
+					{
+						cout << col[j].nume << "\t\t";
+					}
+					cout << endl;
+					for (int j = 0; j < k; j++)
+					{
+						for (int x = 0; x < contor; x++)
+						{
+							cout << rand[j].valori[x] << "\t\t";
 						}
 					}
 				}
-				cout << endl;
-				for (int j = 0; j < contor; j++)
-				{
-					cout << col[j].nume << "\t\t";
-				}
-				cout << endl;
-				for (int j = 0; j < k; j++)
-				{
-					for (int x = 0; x < contor; x++)
-					{
-						cout << rand[j].valori[x] << "\t\t";
-					}
-				}
+				else cout << endl << "Coloanele nu exista";
 			}
 		}
 		else
@@ -952,30 +956,35 @@ public:
 							}
 						}
 					}
-					for (int g = 0; g < contor - 1; g++)
+					if (contor > 0)
 					{
-						for (int h = 0; h < contor; h++)
+
+						for (int g = 0; g < contor - 1; g++)
 						{
-							if (indexes[h] > indexes[g])
+							for (int h = 0; h < contor; h++)
 							{
-								swap(indexes[h], indexes[g]);
+								if (indexes[h] > indexes[g])
+								{
+									swap(indexes[h], indexes[g]);
+								}
+							}
+						}
+						cout << endl;
+						for (int j = 0; j < contor; j++)
+						{
+							cout << col[j].nume << "\t\t";
+						}
+						cout << endl;
+						for (int j = 0; j < k; j++)
+						{
+							for (int x = 0; x < contor; x++)
+							{
+								if (rand[x].valori[index] == arg2)
+									cout << rand[j].valori[x] << "\t\t";
 							}
 						}
 					}
-					cout << endl;
-					for (int j = 0; j < contor; j++)
-					{
-						cout << col[j].nume << "\t\t";
-					}
-					cout << endl;
-					for (int j = 0; j < k; j++)
-					{
-						for (int x = 0; x < contor; x++)
-						{
-							if (rand[x].valori[index] == arg2)
-							cout << rand[j].valori[x] << "\t\t";
-						}
-					}
+					else cout << endl << "Coloanele nu exista";
 				}
 			}
 			else
@@ -1025,22 +1034,100 @@ ostream& operator<<(ostream& o, table t)
 	}
 	return o;
 }
+class writeconfig
+{
+private:
+	int nrtab;
+	string* tabele;
+public:
+	writeconfig()
+	{
+		nrtab = 0;
+		tabele = nullptr;
+	}
+	void del(string s)
+	{
+		int contor = 0;
+		string* aux = new string[nrtab-1];
+		for (int i = 0; i < nrtab; i++)
+		{
+			if (tabele[i].find(s)>0)
+			{
+				aux[contor] = tabele[i];
+				contor++;
+			}
+		}
+		delete[] tabele;
+		nrtab--;
+		tabele = new string[nrtab];
+		for (int i = 0; i < nrtab; i++)
+		{
+			tabele[i] = aux[i];
+		}
+	}
+	void add(string s)
+	{
+		if (tabele != nullptr)
+		{
+			string* aux = new string[nrtab + 1];
+			for (int i = 0; i < nrtab; i++)
+			{
+				aux[i] = tabele[i];
+			}
+			delete[] tabele;
+			nrtab++;
+			tabele = new string[nrtab];
+			for (int i = 0; i < nrtab - 1; i++)
+			{
+				tabele[i] = aux[i];
+			}
+			tabele[nrtab - 1] = s;
+		}
+		else
+		{
+			nrtab++;
+			tabele = new string[nrtab];
+			tabele[nrtab - 1] = s;
+		}
+	}
+	void write()
+	{
+		ofstream f;
+		f.open("cfg.txt", ofstream::out | std::ofstream::trunc);
+		f << "config"<<endl;
+		f << nrtab+1 << endl;;
+		for (int i = 0; i < nrtab; i++)
+		{
+			
+			f << tabele[i] << endl;
+		}
+		f.close();
+	}
+	~writeconfig()
+	{
+
+	}
+}; 
 
 class database
 {
 private:
 	int nr;
 	table* tabele;
+	writeconfig *cfg;
 public:
 	database()
 	{
 		this->nr = 1;
 		this->tabele = nullptr;
+		cfg = new writeconfig;
 	}
 	~database()
 	{
 		if (this->tabele != nullptr)
 			delete[] tabele;
+		cfg->write();
+		delete cfg;
 	}
 	database(database& d)
 	{
@@ -1189,20 +1276,41 @@ public:
 			tabele = new table[nr];
 		}
 	}
-	void create(string nume, string comenzi)
+	void eraseTable()
 	{
-		newTable();
+		if (tabele != nullptr)
+		{
+			table* aux = new table[nr-1];
+			for (int i = 0; i < nr - 2; i++)
+			{
+				aux[i] = tabele[i];
+			}
+			delete[] tabele;
+			nr--;
+			tabele = new table[nr-1];
+			for (int i = 0; i < nr - 2; i++)
+			{
+				tabele[i] = aux[i];
+			}
+			delete[] aux;
+		}
+	}
+	void config(string nume, string comenzi)
+	{
+		//newTable();
 		int i;
 		int ok = 1;
 		string instr;
 		int poz;
-		comenzi.erase(comenzi.length() - 1);
-		comenzi.erase(0, 1);
-		comenzi += ", ";
 		if (nr == 1)
 		{
+			newTable();
 			this->tabele[nr - 1].setNume(nume);
-			
+			string tocfg = nume + ' ' + comenzi;
+			cfg->add(tocfg);
+			comenzi.erase(comenzi.length() - 1);
+			comenzi.erase(0, 1);
+			comenzi += ", ";
 			while (comenzi != "")
 			{
 				poz = comenzi.find(")");
@@ -1212,11 +1320,10 @@ public:
 				comenzi.erase(0, poz + 3);
 			}
 			nr++;
-			cout << "Tabela creata" << endl;
 		}
 		else
 		{
-			for (i = 0; i < this->nr; i++)
+			for (i = 0; i < this->nr-1; i++)
 			{
 				if (tabele[i].getNume() == nume)
 					ok = 0;
@@ -1224,9 +1331,13 @@ public:
 
 			if (ok)
 			{
+				newTable();
 				this->tabele[nr - 1].setNume(nume);
+				string tocfg = nume + ' ' + comenzi;
+				cfg->add(tocfg);
 				comenzi.erase(comenzi.length() - 1);
 				comenzi.erase(0, 1);
+				comenzi += ", ";
 				while (comenzi != "")
 				{
 					poz = comenzi.find(")");
@@ -1235,6 +1346,67 @@ public:
 					tabele[nr - 1].adauga_coloana(instr);
 					comenzi.erase(0, poz + 3);
 				}
+				nr++;
+			}
+		}
+	}
+
+	void create(string nume, string comenzi)
+	{
+		//newTable();
+		int i;
+		int ok = 1;
+		string instr;
+		int poz;
+		if (nr == 1)
+		{
+			newTable();
+			this->tabele[nr - 1].setNume(nume);
+			string tocfg = nume + ' ' + comenzi;
+			cfg->add(tocfg);
+			comenzi.erase(comenzi.length() - 1);
+			comenzi.erase(0, 1);
+			comenzi += ", ";
+			while (comenzi != "")
+			{
+				poz = comenzi.find(")");
+				instr = comenzi.substr(0, poz);
+				instr.erase(0, 1);
+				tabele[nr - 1].adauga_coloana(instr);
+				comenzi.erase(0, poz + 3);
+			}
+			ofstream f(nume+".bin", ios::out | ios::binary);
+			f.close();
+			nr++;
+			cout << "Tabela creata" << endl;
+		}
+		else
+		{
+			for (i = 0; i < this->nr-1; i++)
+			{
+				if (tabele[i].getNume() == nume)
+					ok = 0;
+			}
+
+			if (ok)
+			{
+				newTable();
+				this->tabele[nr - 1].setNume(nume);
+				string tocfg = nume + ' ' + comenzi;
+				cfg->add(tocfg);
+				comenzi.erase(comenzi.length() - 1);
+				comenzi.erase(0, 1);
+				comenzi += ", ";
+				while (comenzi != "")
+				{
+					poz = comenzi.find(")");
+					instr = comenzi.substr(0, poz);
+					instr.erase(0, 1);
+					tabele[nr - 1].adauga_coloana(instr);
+					comenzi.erase(0, poz + 3);
+				}
+				ofstream f(nume + ".bin", ios::out | ios::binary);
+				f.close();
 				nr++;
 				cout << "Tabela creata" << endl;
 			}
@@ -1251,6 +1423,10 @@ public:
 		}
 		if (ok)
 		{
+			cfg->del(nume);
+			string todel;
+			todel = nume + ".bin";
+			remove(nume.c_str());
 			if (nr == 1)
 			{
 				delete[] tabele;
@@ -1377,25 +1553,7 @@ public:
 	friend ostream& operator<<(ostream&, database);
 
 };
-
-class writefile
-{
-private:
-	
-public:
-	writefile()
-	{
-	
-	}
-	writefile(string s)
-	{
-		
-	}
-	~writefile()
-	{
-
-	}
-}; 
+ 
 
 class readfile
 {
@@ -1411,41 +1569,56 @@ public:
 		{
 			readconfig(a);
 		}
+		f.close();
 	}
 	readfile(string s, database& a)
 	{
 		int poz=-1;
-		poz = s.find('.bin');
-		if (poz!=-1)
-		{
-			f.open(s, ios::in | ios::binary);
-		}
-		else
-			f.open(s, ios::in);
+		f.open(s, ios::in);
 		getline(f, str);	
 		if(str=="create")
 		{
-			
+			create(a);
 		}
 		else
 		if (str == "insert")
 		{
 
 		}
+		f.close();
 	}
 	void readconfig(database& a)
 	{
 		string  nume, coloane;
 		int poz;
-		while (getline(f, str))
+		getline(f, str);
+		int max = stoi(str);
+		for(int it=0;it<max-1;it++)
+		{	
+			getline(f, str);
+			poz = str.find(' ');
+			nume = str.substr(0, poz);
+			str.erase(0, poz + 1);
+			coloane = str;
+			a.config(nume, coloane);
+		}
+
+	}
+	void create(database& a)
+	{
+		string  nume, coloane;
+		int poz;
+		getline(f, str);
+		int max = stoi(str);
+		for (int it = 0; it < max - 1; it++)
 		{
+			getline(f, str);
 			poz = str.find(' ');
 			nume = str.substr(0, poz);
 			str.erase(0, poz + 1);
 			coloane = str;
 			a.create(nume, coloane);
 		}
-
 	}
 	~readfile()
 	{
@@ -1515,8 +1688,8 @@ public:
 			else
 			{
 				poz = instructiune.find(create);
-				if (poz != -1)
-				{
+				if (poz != -1 )
+				{	
 					ok = crud_create(a, poz);
 				}
 				poz = instructiune.find(drop);
@@ -1672,6 +1845,6 @@ public:
 	}
 
 };
-//CREATE TABLE tab1 coltxt,text,10,nimic colfloat,float,10,0 colint,int,10,0
+//CREATE TABLE tab1 ((coltxt, text, 10, nimic), (colfloat, float, 10, 0), (colint, int, 10, 0))
 //INSERT INTO tab1 VALUES da,5,6
 
