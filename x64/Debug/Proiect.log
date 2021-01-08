@@ -10,34 +10,36 @@ C:\Users\andre\source\repos\ProiectPOO\database.h(760,1): warning C4267: '=': co
 C:\Users\andre\source\repos\ProiectPOO\database.h(765,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
 C:\Users\andre\source\repos\ProiectPOO\database.h(808,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
 C:\Users\andre\source\repos\ProiectPOO\database.h(852,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(894,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(943,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1208,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1232,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1418,1): warning C4305: 'argument': truncation from 'int' to 'const _Elem'
+C:\Users\andre\source\repos\ProiectPOO\database.h(898,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(947,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1316,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1343,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1372,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1402,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1574,1): warning C4305: 'argument': truncation from 'int' to 'const _Elem'
           with
           [
               _Elem=char
           ]
-C:\Users\andre\source\repos\ProiectPOO\database.h(1418,16): warning C4309: 'argument': truncation of constant value
-C:\Users\andre\source\repos\ProiectPOO\database.h(1418,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1442,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1517,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1522,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1527,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1532,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1537,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1542,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1547,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1562,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1577,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1585,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1588,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1596,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1599,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1609,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1612,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1615,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1627,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\andre\source\repos\ProiectPOO\database.h(1630,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1574,16): warning C4309: 'argument': truncation of constant value
+C:\Users\andre\source\repos\ProiectPOO\database.h(1574,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1603,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1678,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1683,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1688,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1693,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1698,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1703,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1708,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1723,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1738,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1746,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1749,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1757,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1760,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1770,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1773,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1776,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1788,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\andre\source\repos\ProiectPOO\database.h(1791,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
   Proiect.vcxproj -> C:\Users\andre\source\repos\ProiectPOO\x64\Debug\Proiect.exe
