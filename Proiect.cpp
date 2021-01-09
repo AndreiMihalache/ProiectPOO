@@ -20,12 +20,6 @@ int main(int argc, char** argv)
 	//readfile cfg(a);
 	consola c;
 	c.crud(a);
-	/*writeconfig a;
-	a.add(string("nume1 ((col1, int, 10, 10), (col2, int, 10, 0))"));
-	a.add(string("nume2 ((col1, int, 10, 10), (col2, int, 10, 0))"));
-	a.add(string("nume3 ((col1, int, 10, 10), (col2, int, 10, 0))"));
-	a.del(string("nume2"));
-	a.write();*/
 	return 0; 
 	
 }
