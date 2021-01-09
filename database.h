@@ -616,20 +616,44 @@ public:
 	int valid(string val, int index)
 	{
 		int ok = -1;
-		if (col[index].tip == "int" && ok != 1)
+		try
 		{
-			if (to_string(stoi(val)) == val && val.size() <= stoi(col[index].dimensiune))
-				return ok = 1;
+			if (col[index].tip == "int" && ok != 1)
+			{
+				if (to_string(stoi(val)) == val && val.size() <= stoi(col[index].dimensiune))
+					return ok = 1;
+			}
 		}
-		if (col[index].tip == "float" && ok != 1)
+		catch (...)
 		{
-			if (stof(to_string(stof(val))) == stof(val) && val.size() <= stoi(col[index].dimensiune))
-				return ok = 1;
+			ok = -1;
+			return ok;
 		}
-		if (col[index].tip == "text" && ok != 1)
+		try
 		{
-			if (val.size() <= stoi(col[index].dimensiune))
-				ok = 1;
+			if (col[index].tip == "float" && ok != 1)
+			{
+				if (stof(to_string(stof(val))) == stof(val) && val.size() <= stoi(col[index].dimensiune))
+					return ok = 1;
+			}
+		}
+		catch (...)
+		{
+			ok = -1;
+			return ok;
+		}
+		try
+		{
+			if (col[index].tip == "text" && ok != 1)
+			{
+				if (val.size() <= stoi(col[index].dimensiune))
+					ok = 1;
+			}
+		}
+		catch (...)
+		{
+			ok = -1;
+			return ok;
 		}
 		return ok;
 	}
@@ -663,28 +687,44 @@ public:
 	void insert(string values)
 	{
 		addrand();
-		string val;
+		string val, aux;
+		bool ok = 1;
 		values.erase(0, 1);
 		values.erase(values.length() - 1);
 		values = values + ", ";
+		val = values;
 		int poz, index = -1;
-		while (values != "")
+		while (val != "")
 		{
-			poz = values.find(",");
-			val = values.substr(0, poz);
+			poz = val.find(",");
+			aux = val.substr(0, poz);
 			index++;
-			if (valid(val, index) == 1)
+			if (valid(aux, index) != 1)
 			{
-				rand[k - 1].append(val);
+				ok = 0;
 			}
-			values.erase(0, poz + 2);
+			val.erase(0, poz + 2);
 		}
-		if (rand[k - 1].contor < rand[k - 1].capacitate)
+		if (ok)
 		{
-			for (int j = rand[k - 1].contor; j < rand[k - 1].capacitate; j++)
+			for(int j=0;j<i;j++)
 			{
-				rand[k - 1].append(col[rand[k - 1].contor].valoare_implicita);
+				poz = values.find(',');
+				aux = values.substr(0, poz);
+				if (aux == " ")
+				{
+					rand[k - 1].append(col[i].valoare_implicita);
+				}
+				else
+				{
+					rand[k - 1].append(aux);
+				}
+				values.erase(0, poz + 2);
 			}
+		}
+		else
+		{
+			cout << "Datele nu corespund tipului de coloana";
 		}
 	}
 	void del(string instr)
@@ -1001,6 +1041,11 @@ public:
 			}
 		}
 	}
+	//neterminat
+	/*void serializare()
+	{
+		ofstream f()
+	}*/
 
 	friend class database;
 
@@ -1034,7 +1079,7 @@ istream& operator>>(istream& i, table& t)
 
 ostream& operator<<(ostream& o, table t)
 {
-	o << "Nume tabela: " << t.getNume() << endl;
+	o << endl << "Nume tabela : " << t.getNume() << endl << endl;
 	o << "Numar coloane : " << t.getI() << endl;
 	for (int j = 0; j < t.i; j++)
 	{
@@ -1654,15 +1699,8 @@ public:
 	consola()
 	{
 		cout << aplicatie << endl;
-		cout << "Sintaxa instructiuni:" << endl;
-		cout << "CREATE TABLE nume_tabela ((nume_coloana, tip, dimensiune, valoare_implicita), (nume_coloana2, tip, dimensiune, valoare_implicita)...)" << endl;
-		cout << "DROP TABLE nume_tabela" << endl;
-		cout << "DISPLAY TABLE nume_tabela" << endl;
-		cout << "INSERT INTO nume_tabela VALUES (val1, val2, ...)" << endl;
-		cout << "DELETE FROM nume_tabela WHERE nume_coloana = valoare" << endl;
-		cout << "UPDATE nume_tabela SET nume_coloana = valoare WHERE nume_coloana = valoare" << endl;
-		cout << "SELECT (cel_putin_o_coloana, ...) | ALL FROM nume_tabela [WHERE nume_coloana = valoare]" << endl;
-		cout << "Introduceti instructiune" << endl;
+		cout << "Introduceti una dintre instructiunile:" << endl;
+		cout << create << " / " << drop << " / " << display << " / " << insert << " / " << del << " / " << update << " / " << select << endl;
 	}
 	//SELECT (cel_putin_o_coloana, ...) | ALL FROM nume_tabela [WHERE nume_coloană = valoare] - clauza WHERE este optionala
 	//SELECT (v1,v2) FROM nume_tabela WHERE .. 
@@ -1674,18 +1712,15 @@ public:
 		while (ok)
 		{
 			cout << endl;
-			if (instructiune != "")
+			if (instructiune == "MENIU")
 			{
-				cout << aplicatie << endl;
-				cout << "Sintaxa instructiuni:" << endl;
-				cout << "CREATE TABLE nume_tabela ((nume_coloana, tip, dimensiune, valoare_implicita), (nume_coloana2, tip, dimensiune, valoare_implicita)...)" << endl;
-				cout << "DROP TABLE nume_tabela" << endl;
-				cout << "DISPLAY TABLE nume_tabela" << endl;
-				cout << "INSERT INTO nume_tabela VALUES (val1, val2, ...)" << endl;
-				cout << "DELETE FROM nume_tabela WHERE nume_coloana = valoare" << endl;
-				cout << "UPDATE nume_tabela SET nume_coloana = valoare WHERE nume_coloana = valoare" << endl;
-				cout << "SELECT (cel_putin_o_coloana, ...) | ALL FROM nume_tabela [WHERE nume_coloana = valoare]" << endl;
-				cout << "Introduceti instructiune" << endl;
+				cout << "Introduceti una dintre instructiunile:" << endl;
+				cout << create << " / " << drop << " / " << display << " / " << insert << " / " << del << " / " << update << " / " << select << endl << endl;
+			}
+			else
+			{
+				cout << "Pentru a iesi scrieti EXIT" << endl;
+				cout << "Pentru meniu scrieti MENIU" << endl << endl;
 			}
 			getline(std::cin, instructiune);
 			if (instructiune == "EXIT")
@@ -1695,40 +1730,634 @@ public:
 			}
 			else
 			{
+				bool vf2 = 0;
 				poz = instructiune.find(create);
-				if (poz != -1 )
-				{	
-					ok = crud_create(a, poz);
+
+				if (poz != -1)
+				{
+					if (instructiune == "CREATE TABLE")
+					{
+						cout << "Introduceti o sintaxa de forma : " << endl << "CREATE TABLE nume_tabela ((nume_coloana, tip, dimensiune, valoare_implicita), (nume_coloana2, tip, dimensiune, valoare_implicita)...)" << endl;
+					}
+					else
+					{
+						int vf = 1;
+						int pz;
+						string secv, cop;
+						cop = instructiune;
+						secv = instructiune.substr(0, create.length());
+						if (secv != create && vf == 1)
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, create.length());
+						if (instructiune[0] != ' ' && vf == 1)
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						if (instructiune[pz] != ' ' && vf == 1)
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, pz+1);
+						if ((instructiune[instructiune.length() - 1] != ')' || instructiune[0] != '(') && vf == 1)
+						{
+							vf = 0;
+						}
+						instructiune.erase(instructiune.length() - 1);
+						instructiune.erase(0, 1);
+						string cop3 = instructiune;
+						cop3 += ", ";
+						while (cop3 != "" && vf == 1)
+						{
+							pz = cop3.find(')');
+							instructiune = cop3.substr(0, pz + 1);
+							if (instructiune[instructiune.length() - 1] != ')' || instructiune[0] != '(')
+							{
+								vf = 0;
+							}
+							instructiune.erase(instructiune.length() - 1);
+							instructiune.erase(0, 1);
+							string cop2 = instructiune;
+							int cnt = 0;
+							instructiune += ", ";
+							while (instructiune != "")
+							{
+								pz = instructiune.find(',');
+								cnt++;
+								instructiune.erase(0, pz + 2);
+							}
+							if (cnt != 4)
+							{
+								vf = 0;
+							}
+							instructiune = cop2;
+							pz = instructiune.find(',');
+							instructiune.erase(0, pz + 2);
+							pz = instructiune.find(',');
+							secv = instructiune.substr(0, pz);
+							if (secv != "int" && secv != "float" && secv != "text")
+							{
+								vf = 0;
+							}
+							pz = instructiune.find(',');
+							instructiune.erase(0, pz + 2);
+							pz = instructiune.find(',');
+							secv = instructiune.substr(0, pz);
+							while (secv != "")
+							{
+								if (secv[0] < '0' || secv[0]>'9')
+								{
+									vf = 0;
+								}
+								secv.erase(0, 1);
+							}
+							pz = instructiune.find(',');
+							instructiune.erase(0, pz + 2);
+							while (instructiune != "")
+							{
+								if (instructiune[0] < '0' || instructiune[0]>'9')
+								{
+									vf = 0;
+								}
+								instructiune.erase(0, 1);
+							}
+							pz = cop3.find(')');
+							cop3.erase(0, pz + 3);
+						}
+						if (vf == 1)
+						{
+							instructiune = cop;
+							ok = crud_create(a, poz);
+							vf2 = 1;
+						}
+						else
+						{
+							cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
+							vf2 = 1;
+						}
+					}
 				}
 				poz = instructiune.find(drop);
 				if (poz != -1)
 				{
-					ok = crud_drop(a, poz);
+					if (instructiune == "DROP TABLE")
+					{
+						cout << "Introduceti o sintaxa de forma : " << endl << "DROP TABLE nume_tabela" << endl;
+					}
+					else
+					{
+						int pz, vf = 1;
+						string secv, cop;
+						cop = instructiune;
+						secv = instructiune.substr(0, drop.length());
+						if (secv != drop)
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, drop.length());
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (vf == 1)
+						{
+							instructiune = cop;
+							ok = crud_drop(a, poz);
+							vf2 = 1;
+						}
+						else
+						{
+							cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
+							vf2 = 1;
+						}
+					}
 				}
 				poz = instructiune.find(display);
 				if (poz != -1)
 				{
-					ok = crud_display(a, poz);
+
+					if (instructiune == "DISPLAY TABLE")
+					{
+						cout << "Introduceti o sintaxa de forma : " << endl << "DISPLAY TABLE nume_tabela" << endl;
+					}
+					else
+					{
+						int pz, vf = 1;
+						string secv, cop;
+						cop = instructiune;
+						secv = instructiune.substr(0, display.length());
+						if (secv != display)
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, display.length());
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (vf == 1)
+						{
+							instructiune = cop;
+							ok = crud_display(a, poz);
+							vf2 = 1;
+						}
+						else
+						{
+							cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
+							vf2 = 1;
+						}
+					}
 				}
 				poz = instructiune.find(insert);
 				if (poz != -1)
 				{
-					ok = crud_insert(a, poz);
+					if (instructiune == "INSERT INTO")
+					{
+						cout << "Introduceti o sintaxa de forma : " << endl << "INSERT INTO nume_tabela VALUES (val1, val2, ...)" << endl;
+					}
+					else
+					{
+						int pz, vf = 1;
+						string secv, cop;
+						cop = instructiune;
+						secv = instructiune.substr(0, insert.length());
+						if (secv != insert)
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, insert.length());
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (instructiune[instructiune.length() - 1] != ')')
+						{
+							vf = 0;
+						}
+						instructiune.erase(instructiune.length() - 1);
+						if (instructiune[0] != '(')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						instructiune += ", ";
+						while (instructiune != "")
+						{
+							pz = instructiune.find(',');
+							instructiune.erase(0, pz + 1);
+							if (instructiune[0] != ' ')
+							{
+								vf = 0;
+							}
+							instructiune.erase(0, 1);
+						}
+						if (vf == 1)
+						{
+							instructiune = cop;
+							ok = crud_insert(a, poz);
+							vf2 = 1;
+						}
+						else
+						{
+							cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
+							vf2 = 1;
+						}
+					}
 				}
 				poz = instructiune.find(del);
 				if (poz != -1)
 				{
-					ok = crud_delete(a, poz);
+					if (instructiune == "DELETE FROM")
+					{
+						cout<< "Introduceti o sintaxa de forma : " << endl << "DELETE FROM nume_tabela WHERE nume_coloana = valoare" << endl;
+					}
+					else
+					{
+						int pz, vf = 1;
+						string secv, cop;
+						cop = instructiune;
+						secv = instructiune.substr(0, del.length());
+						if (secv != del)
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, del.length());
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						secv = instructiune.substr(0, pz);
+						if (secv != "WHERE")
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (instructiune[0] != '=')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						if (vf == 1)
+						{
+							instructiune = cop;
+							ok = crud_delete(a, poz);
+							vf2 = 1;
+						}
+						else
+						{
+							cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
+							vf2 = 1;
+						}
+					}
 				}
 				poz = instructiune.find(update);
 				if (poz != -1)
 				{
-					ok = crud_update(a, poz);
+					if (instructiune == "UPDATE")
+					{
+						cout << "Introduceti o sintaxa de forma : " << endl << "UPDATE nume_tabela SET nume_coloana = valoare WHERE nume_coloana = valoare" << endl;
+					}
+					else
+					{
+						int pz, vf = 1;
+						string secv, cop;
+						cop = instructiune;
+						secv = instructiune.substr(0, update.length());
+						if (secv != update)
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, update.length());
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						secv = instructiune.substr(0, pz);
+						if (secv != "SET")
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (instructiune[0] != '=')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						secv = instructiune.substr(0, pz);
+						if (secv != "WHERE")
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (instructiune[0] != '=')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (vf == 1)
+						{
+							instructiune = cop;
+							ok = crud_update(a, poz);
+							vf2 = 1;
+						}
+						else
+						{
+							cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
+							vf2 = 1;
+						}
+					}
 				}
 				poz = instructiune.find(select);
 				if (poz != -1)
 				{
-					ok = crud_select(a, poz);
+					if (instructiune == "SELECT")
+					{
+						cout << "Introduceti o sintaxa de forma : " << endl << "SELECT (cel_putin_o_coloana, ...) / ALL FROM nume_tabela [WHERE nume_coloana = valoare] - clauza WHERE este optionala" << endl;
+					}
+					else
+					{
+						int pz, vf = 1;
+						string secv, cop;
+						cop = instructiune;
+						secv = instructiune.substr(0, select.length());
+						if (secv != select)
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, select.length());
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (instructiune[0] == 'A')
+						{
+							pz = instructiune.find(' ');
+							secv = instructiune.substr(0, pz);
+							if (secv != "ALL")
+							{
+								vf = 0;
+							}
+							instructiune.erase(0, pz);
+							if (instructiune[0] != ' ')
+							{
+								vf = 0;
+							}
+							instructiune.erase(0, 1);
+							pz = instructiune.find(' ');
+							secv = instructiune.substr(0, pz);
+							if (secv != "FROM")
+							{
+								vf = 0;
+							}
+							instructiune.erase(0, pz);
+							if (instructiune[0] != ' ')
+							{
+								vf = 0;
+							}
+							instructiune.erase(0, 1);
+							instructiune += ' ';
+							pz = instructiune.find(' ');
+							instructiune.erase(0, pz);
+							if (instructiune[0] != ' ')
+							{
+								vf = 0;
+							}
+							instructiune.erase(0, 1);
+							if (instructiune != "")
+							{
+								pz = instructiune.find(' ');
+								secv = instructiune.substr(0, pz);
+								if (secv != "WHERE")
+								{
+									vf = 0;
+								}
+								instructiune.erase(0, pz);
+								if (instructiune[0] != ' ')
+								{
+									vf = 0;
+								}
+								instructiune.erase(0, 1);
+								pz = instructiune.find(' ');
+								instructiune.erase(0, pz);
+								if (instructiune[0] != ' ')
+								{
+									vf = 0;
+								}
+								instructiune.erase(0, 1);
+								if (instructiune[0] != '=')
+								{
+									vf = 0;
+								}
+								instructiune.erase(0, 1);
+								if (instructiune[0] != ' ')
+								{
+									vf = 0;
+								}
+								instructiune.erase(0, 1);
+							}
+						}
+						else if (instructiune[0] == '(')
+						{
+							instructiune.erase(0, 1);
+							pz = instructiune.find(' ');
+							while (instructiune[pz - 1] != ')')
+							{
+								if (instructiune[pz - 1] != ',')
+								{
+									vf = 0;
+								}
+								instructiune.erase(0, pz);
+								if (instructiune[0] != ' ')
+								{
+									vf = 0;
+								}
+								instructiune.erase(0, 1);
+								pz = instructiune.find(' ');
+							}
+							instructiune.erase(0, pz - 1);
+							if (instructiune[0] != ')')
+							{
+								vf = 0;
+							}
+							instructiune.erase(0, 1);
+							if (instructiune[0] != ' ')
+							{
+								vf = 0;
+							}
+							instructiune.erase(0, 1);
+							pz = instructiune.find(' ');
+							secv = instructiune.substr(0, pz);
+							if (secv != "FROM")
+							{
+								vf = 0;
+							}
+							instructiune.erase(0, pz);
+							if (instructiune[0] != ' ')
+							{
+								vf = 0;
+							}
+							instructiune.erase(0, 1);
+							instructiune += ' ';
+							pz = instructiune.find(' ');
+							instructiune.erase(0, pz);
+							if (instructiune[0] != ' ')
+							{
+								vf = 0;
+							}
+							instructiune.erase(0, 1);
+							if (instructiune != "")
+							{
+								pz = instructiune.find(' ');
+								secv = instructiune.substr(0, pz);
+								if (secv != "WHERE")
+								{
+									vf = 0;
+								}
+								instructiune.erase(0, pz);
+								if (instructiune[0] != ' ')
+								{
+									vf = 0;
+								}
+								pz = instructiune.find(' ');
+								instructiune.erase(0, pz);
+								if (instructiune[0] != ' ')
+								{
+									vf = 0;
+								}
+								instructiune.erase(0, 1);
+								instructiune.erase(0, pz);
+								if (instructiune[0] != '=')
+								{
+									vf = 0;
+								}
+								instructiune.erase(0, 1);
+								instructiune.erase(0, pz);
+								if (instructiune[0] != ' ')
+								{
+									vf = 0;
+								}
+								instructiune.erase(0, 1);
+							}
+						}
+						else
+						{
+							cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
+							vf2 = 1;
+							break;
+						}
+						if (vf == 1)
+						{
+							instructiune = cop;
+							ok = crud_select(a, poz);
+							vf2 = 1;
+						}
+						else
+						{
+							cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
+							vf2 = 1;
+						}
+					}
+				}
+				if (vf2 == 0)
+				{
+					cout<<"Comanda introdusa nu este corecta. Incercati din nou" << endl;
 				}
 				comenzi[cnt] = instructiune;
 				cnt++;
@@ -1737,6 +2366,7 @@ public:
 		return 1;
 	};
 	int crud_create(database& a, int poz)
+
 	{
 
 		instructiune.erase(poz, create.length() + 1);
