@@ -13,7 +13,11 @@ int main(int argc, char** argv)
 		s[i] = argv[i];
 	}
 	database a;
-	readfile cfg(a);
+	ifstream f;
+	/*f.open("cfg.txt", ios::in);
+	getline(f, str);
+	int a::nr = stoi(str);*/
+	//readfile cfg(a);
 	consola c;
 	c.crud(a);
 	return 0; 
