@@ -1711,16 +1711,19 @@ public:
 		int poz = -1, ok = 1;
 		while (ok)
 		{
+			bool vf2 = 0;
 			cout << endl;
 			if (instructiune == "MENIU")
 			{
 				cout << "Introduceti una dintre instructiunile:" << endl;
 				cout << create << " / " << drop << " / " << display << " / " << insert << " / " << del << " / " << update << " / " << select << endl << endl;
+				vf2 = 1;
 			}
 			else
 			{
 				cout << "Pentru a iesi scrieti EXIT" << endl;
 				cout << "Pentru meniu scrieti MENIU" << endl << endl;
+				vf2 = 1;
 			}
 			getline(std::cin, instructiune);
 			if (instructiune == "EXIT")
@@ -1730,14 +1733,15 @@ public:
 			}
 			else
 			{
-				bool vf2 = 0;
 				poz = instructiune.find(create);
 
 				if (poz != -1)
 				{
+					cout << endl;
 					if (instructiune == "CREATE TABLE")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "CREATE TABLE nume_tabela ((nume_coloana, tip, dimensiune, valoare_implicita), (nume_coloana2, tip, dimensiune, valoare_implicita)...)" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -1843,9 +1847,11 @@ public:
 				poz = instructiune.find(drop);
 				if (poz != -1)
 				{
+					cout << endl;
 					if (instructiune == "DROP TABLE")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "DROP TABLE nume_tabela" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -1879,10 +1885,11 @@ public:
 				poz = instructiune.find(display);
 				if (poz != -1)
 				{
-
+					cout << endl;
 					if (instructiune == "DISPLAY TABLE")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "DISPLAY TABLE nume_tabela" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -1916,9 +1923,11 @@ public:
 				poz = instructiune.find(insert);
 				if (poz != -1)
 				{
+					cout << endl;
 					if (instructiune == "INSERT INTO")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "INSERT INTO nume_tabela VALUES (val1, val2, ...)" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -1987,9 +1996,11 @@ public:
 				poz = instructiune.find(del);
 				if (poz != -1)
 				{
+					cout << endl;
 					if (instructiune == "DELETE FROM")
 					{
 						cout<< "Introduceti o sintaxa de forma : " << endl << "DELETE FROM nume_tabela WHERE nume_coloana = valoare" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -2058,9 +2069,11 @@ public:
 				poz = instructiune.find(update);
 				if (poz != -1)
 				{
+					cout << endl;
 					if (instructiune == "UPDATE")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "UPDATE nume_tabela SET nume_coloana = valoare WHERE nume_coloana = valoare" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -2166,9 +2179,11 @@ public:
 				poz = instructiune.find(select);
 				if (poz != -1)
 				{
+					cout << endl;
 					if (instructiune == "SELECT")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "SELECT (cel_putin_o_coloana, ...) / ALL FROM nume_tabela [WHERE nume_coloana = valoare] - clauza WHERE este optionala" << endl;
+						vf2 = 1;
 					}
 					else
 					{
