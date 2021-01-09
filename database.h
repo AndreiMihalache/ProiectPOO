@@ -725,6 +725,7 @@ public:
 						if (k == 1)
 						{
 							delete[] rand;
+							k = 0;
 						}
 						else
 						{
@@ -818,118 +819,29 @@ public:
 	}
 	void select(string cols, string cond)
 	{
-		cout << endl;
-		if (cond == "")
+		if (k == 0)
 		{
-			if (cols == "ALL")
-			{
-				cout << string(12 * i, '-') << endl;;
-				for (int j = 0; j < i; j++)
-				{
-					center(col[j].nume);
-				}
-				cout << endl<<string(12 * i, '-') << endl;
-				for (int x = 0; x < k; x++)
-				{
-					cout << endl;
-					for (int z = 0; z < i; z++)
-					{
-						center(rand[x].valori[z]);
-					}
-				}
-			}
-			else
-			{
-				cols.erase(0,1);
-				cols.erase(cols.length() - 1);
-				cols = cols + ", ";
-				int* indexes = new int[i];
-				int contor = 0;
-				while (cols != "")
-				{
-					string aux;
-					int poz;
-					poz = cols.find(',');
-					aux = cols.substr(0, poz);
-					cols.erase(0, poz + 2);
-					for (int j = 0; j < i; j++)
-					{
-						if (col[j].nume == aux)
-						{
-							indexes[contor] = j;
-							contor++;
-						}
-					}
-				}
-				if (contor > 0)
-				{
-					for (int g = 0; g < contor - 1; g++)
-					{
-						for (int h = 0; h < contor; h++)
-						{
-							if (indexes[h] > indexes[g])
-							{
-								swap(indexes[h], indexes[g]);
-							}
-						}
-					}
-					cout << endl;
-					for (int j = 0; j < contor; j++)
-					{
-						cout << col[j].nume << "\t\t";
-					}
-					cout << endl;
-					for (int j = 0; j < k; j++)
-					{
-						for (int x = 0; x < contor; x++)
-						{
-							cout << rand[j].valori[x] << "\t\t";
-						}
-					}
-				}
-				else cout << endl << "Coloanele nu exista";
-			}
+			cout << "Tabela este goala";
 		}
 		else
-		{	
-			string arg1;
-			string arg2;
-			int poz;
-			poz = cond.find(' ');
-			arg1 = cond.substr(0, poz);
-			cond.erase(0, poz + 2);
-			arg2 = cond;
-			int ok1=0,ok2=0;
-			int index;
-			for (int j = 0; j < i; j++)
-			{
-				if (col[j].nume == arg1)
-				{
-					ok1 = 1; index = j;
-				}
-			}
-			for (int j = 0; j < k; j++)
-			{
-				if (rand[j].valori[index]==arg2)
-				{
-					ok2 = 1;
-				}
-			}
-			if (ok1 && ok2)
+		{
+			cout << endl;
+			if (cond == "")
 			{
 				if (cols == "ALL")
 				{
+					cout << string(12 * i, '-') << endl;;
 					for (int j = 0; j < i; j++)
 					{
-						cout << col[j].nume << "\t\t";
+						center(col[j].nume);
 					}
+					cout << endl << string(12 * i, '-') << endl;
 					for (int x = 0; x < k; x++)
 					{
 						cout << endl;
 						for (int z = 0; z < i; z++)
 						{
-							if(rand[x].valori[index]==arg2)
-							cout << rand[x].valori[z] << "\t\t";
+							center(rand[x].valori[z]);
 						}
 					}
 				}
@@ -958,8 +870,7 @@ public:
 					}
 					if (contor > 0)
 					{
-
-						for (int g = 0; g < contor - 1; g++)
+						for (int g = 0; g < contor -1 ; g++)
 						{
 							for (int h = 0; h < contor; h++)
 							{
@@ -972,15 +883,14 @@ public:
 						cout << endl;
 						for (int j = 0; j < contor; j++)
 						{
-							cout << col[j].nume << "\t\t";
+							cout << col[indexes[j]].nume << "\t\t";
 						}
 						cout << endl;
 						for (int j = 0; j < k; j++)
 						{
 							for (int x = 0; x < contor; x++)
 							{
-								if (rand[x].valori[index] == arg2)
-									cout << rand[j].valori[x] << "\t\t";
+								cout << rand[j].valori[indexes[x]] << "\t\t";
 							}
 						}
 					}
@@ -989,7 +899,105 @@ public:
 			}
 			else
 			{
-				cout << "Nu exista inregistrari care sa respecte conditia";
+				string arg1;
+				string arg2;
+				int poz;
+				poz = cond.find(' ');
+				arg1 = cond.substr(0, poz);
+				cond.erase(0, poz + 2);
+				arg2 = cond;
+				int ok1 = 0, ok2 = 0;
+				int index;
+				for (int j = 0; j < i; j++)
+				{
+					if (col[j].nume == arg1)
+					{
+						ok1 = 1; index = j;
+					}
+				}
+				for (int j = 0; j < k; j++)
+				{
+					if (rand[j].valori[index] == arg2)
+					{
+						ok2 = 1;
+					}
+				}
+				if (ok1 && ok2)
+				{
+					if (cols == "ALL")
+					{
+						for (int j = 0; j < i; j++)
+						{
+							cout << col[j].nume << "\t\t";
+						}
+						for (int x = 0; x < k; x++)
+						{
+							cout << endl;
+							for (int z = 0; z < i; z++)
+							{
+								if (rand[x].valori[index] == arg2)
+									cout << rand[x].valori[z] << "\t\t";
+							}
+						}
+					}
+					else
+					{
+						cols.erase(0, 1);
+						cols.erase(cols.length() - 1);
+						cols = cols + ", ";
+						int* indexes = new int[i];
+						int contor = 0;
+						while (cols != "")
+						{
+							string aux;
+							int poz;
+							poz = cols.find(',');
+							aux = cols.substr(0, poz);
+							cols.erase(0, poz + 2);
+							for (int j = 0; j < i; j++)
+							{
+								if (col[j].nume == aux)
+								{
+									indexes[contor] = j;
+									contor++;
+								}
+							}
+						}
+						if (contor > 0)
+						{
+
+							for (int g = 0; g < contor - 1; g++)
+							{
+								for (int h = 0; h < contor; h++)
+								{
+									if (indexes[h] > indexes[g])
+									{
+										swap(indexes[h], indexes[g]);
+									}
+								}
+							}
+							cout << endl;
+							for (int j = 0; j < contor; j++)
+							{
+								cout << col[j].nume << "\t\t";
+							}
+							cout << endl;
+							for (int j = 0; j < k; j++)
+							{
+								for (int x = 0; x < contor; x++)
+								{
+									if (rand[x].valori[index] == arg2)
+										cout << rand[j].valori[x] << "\t\t";
+								}
+							}
+						}
+						else cout << endl << "Coloanele nu exista";
+					}
+				}
+				else
+				{
+					cout << "Nu exista inregistrari care sa respecte conditia";
+				}
 			}
 		}
 	}
