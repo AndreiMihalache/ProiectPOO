@@ -164,6 +164,7 @@ public:
 	friend istream& operator>>(istream&, reg&);
 	friend ostream& operator<<(ostream&, reg);
 	friend class table;
+	friend class tablefile;
 };
 
 istream& operator>>(istream& i, reg& r)
@@ -319,7 +320,6 @@ public:
 		this->valoare_implicita = valoare_implicita;
 	}
 	friend class table;
-
 	friend istream& operator>>(istream&, coloana&);
 	friend ostream& operator<<(ostream&, coloana);
 };
@@ -356,6 +356,101 @@ ostream& operator<<(ostream& o, coloana c)
 	return o;
 }
 
+class tablefile
+{
+private:
+	int nrreg;
+	string* inreg;
+public:
+	tablefile()
+	{
+		nrreg = 0;
+		inreg = nullptr;
+	}
+	~tablefile()
+	{
+		if (inreg != nullptr)
+			delete[] inreg;
+	}
+	tablefile(tablefile& t)
+	{
+		this->nrreg = t.nrreg;
+		if (this->nrreg)
+		{
+			this->inreg = new string[nrreg];
+			for (int it = 0; it < nrreg; it++)
+			{
+				this->inreg = t.inreg;
+			}
+		}
+		else
+			this->inreg = nullptr;
+	}
+	void del(string s)
+	{
+		int contor = 0;
+		string* aux = new string[nrreg - 1];
+		for (int i = 0; i < nrreg; i++)
+		{
+			if (inreg[i].find(s) > 0)
+			{
+				aux[contor] = inreg[i];
+				contor++;
+			}
+		}
+		delete[] inreg;
+		nrreg--;
+		inreg = new string[nrreg];
+		for (int i = 0; i < nrreg; i++)
+		{
+			inreg[i] = aux[i];
+		}
+	}
+	void add(string s)
+	{
+		if (inreg != nullptr)
+		{
+			string* aux = new string[nrreg + 1];
+			for (int i = 0; i < nrreg; i++)
+			{
+				aux[i] = inreg[i];
+			}
+			delete[] inreg;
+			nrreg++;
+			inreg = new string[nrreg];
+			for (int i = 0; i < nrreg - 1; i++)
+			{
+				inreg[i] = aux[i];
+			}
+			inreg[nrreg - 1] = s;
+		}
+		else
+		{
+			nrreg++;
+			inreg = new string[nrreg];
+			inreg[nrreg - 1] = s;
+		}
+	}
+	void write(string name)
+	{
+		ofstream f;
+		f.open(name.c_str(), ios::binary);
+		int length;
+		f.write((char*)&nrreg, sizeof(nrreg));
+		if (nrreg > 0)
+		{
+			for (int j = 0; j < nrreg; j++)
+			{
+				length = inreg[j].length();
+				f.write((char*)&inreg[j], sizeof(inreg[j]));
+			}
+		}
+		f.close();
+	}
+	friend class table;
+	friend class reg;
+};
+
 class table
 {
 private:
@@ -363,6 +458,7 @@ private:
 	coloana* col;
 	int i, k;
 	reg* rand;
+	tablefile *file;
 public:
 	table()
 	{
@@ -371,6 +467,7 @@ public:
 		i = 0;
 		rand = nullptr;
 		k = 0;
+		file = new tablefile;
 	}
 	~table()
 	{
@@ -378,6 +475,8 @@ public:
 			delete[]col;
 		if (rand != nullptr)
 			delete[]rand;
+		delete[] file;
+
 	}
 	table(table& t)
 	{
@@ -409,6 +508,7 @@ public:
 		{
 			rand = nullptr;
 		}
+		this->file = t.file;
 	}
 	table operator=(table& t)
 	{
@@ -684,15 +784,39 @@ public:
 		}
 
 	}
+	void write()
+	{
+		file->write(nume);
+	}
+	void config()
+	{
+		ifstream f;
+		f.open(nume.c_str(), ios::binary);
+		int contor;
+		f.read((char*)&contor, sizeof(contor));
+		if (contor > 0)
+		{
+			int length;
+			for (int it = 0; it < contor; i++)
+			{
+				f.read((char*)&length, sizeof(length));
+				char* aux = new char[length + 1];
+				f.read(aux, length + 1);
+				string aux2;
+				aux2 = aux;
+				insert(aux2);
+			}
+		}
+	}
 	void insert(string values)
 	{
-		addrand();
+		
 		string val, aux;
 		bool ok = 1;
-		values.erase(0, 1);
-		values.erase(values.length() - 1);
-		values = values + ", ";
 		val = values;
+		val.erase(0, 1);
+		val.erase(val.length() - 1);
+		val = val + ", ";
 		int poz, index = -1;
 		while (val != "")
 		{
@@ -707,6 +831,11 @@ public:
 		}
 		if (ok)
 		{
+			addrand();
+			file->add(values);
+			values.erase(0, 1);
+			values.erase(values.length() - 1);
+			values = values + ", ";
 			for(int j=0;j<i;j++)
 			{
 				poz = values.find(',');
@@ -1041,13 +1170,9 @@ public:
 			}
 		}
 	}
-	//neterminat
-	/*void serializare()
-	{
-		ofstream f()
-	}*/
 
 	friend class database;
+	friend class tablefile;
 
 	friend istream& operator>>(istream&, table&);
 	friend ostream& operator<<(ostream&, table);
@@ -1158,7 +1283,24 @@ public:
 	}
 	~writeconfig()
 	{
-
+		if (tabele != nullptr)
+			delete[] tabele;
+	}
+	writeconfig(writeconfig& c)
+	{
+		this->nrtab = c.nrtab;
+		if (this->nrtab)
+		{
+			this->tabele = new string[nrtab];
+			for (int it = 0; it < nrtab; it++)
+			{
+				this->tabele[it] = c.tabele[it];
+			}
+		}
+		else
+		{
+			this->tabele = nullptr;
+		}
 	}
 }; 
 
@@ -1197,6 +1339,7 @@ public:
 		{
 			this->tabele = nullptr;
 		}
+		this->cfg = d.cfg;
 	}
 	database operator+(int valoare)
 	{
@@ -1372,6 +1515,7 @@ public:
 				tabele[nr - 1].adauga_coloana(instr);
 				comenzi.erase(0, poz + 3);
 			}
+			tabele[nr - 1].config();
 			nr++;
 		}
 		else
@@ -1399,6 +1543,7 @@ public:
 					tabele[nr - 1].adauga_coloana(instr);
 					comenzi.erase(0, poz + 3);
 				}
+				tabele[nr - 1].config();
 				nr++;
 			}
 		}
@@ -1676,8 +1821,7 @@ public:
 	~readfile()
 	{
 
-
-	};
+	}
 };
 
 class consola

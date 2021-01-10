@@ -14,10 +14,11 @@ int main(int argc, char** argv)
 	}
 	database a;
 	ifstream f;
-	/*f.open("cfg.txt", ios::in);
-	getline(f, str);
-	int a::nr = stoi(str);*/
-	//readfile cfg(a);
+	readfile cfg(a);
+	for (int i = 1; i < argc; i++)
+	{
+		readfile files(s[i], a);
+	}
 	consola c;
 	c.crud(a);
 	return 0; 
