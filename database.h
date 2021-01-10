@@ -370,7 +370,7 @@ public:
 	~tablefile()
 	{
 		if (inreg != nullptr)
-			delete[] inreg;
+			delete []inreg;
 	}
 	tablefile(tablefile& t)
 	{
@@ -434,7 +434,7 @@ public:
 	void write(string name)
 	{
 		ofstream f;
-		f.open(name.c_str(), ios::binary);
+		f.open((name+".bin").c_str(), ios::binary);
 		int length;
 		f.write((char*)&nrreg, sizeof(nrreg));
 		if (nrreg > 0)
@@ -442,7 +442,8 @@ public:
 			for (int j = 0; j < nrreg; j++)
 			{
 				length = inreg[j].length();
-				f.write((char*)&inreg[j], sizeof(inreg[j]));
+				f.write((char*)&length, sizeof(length));
+				f.write(inreg[j].c_str(), length+1);
 			}
 		}
 		f.close();
@@ -475,7 +476,8 @@ public:
 			delete[]col;
 		if (rand != nullptr)
 			delete[]rand;
-		delete[] file;
+		if(file!=nullptr)
+			delete file;
 
 	}
 	table(table& t)
@@ -791,16 +793,17 @@ public:
 	void config()
 	{
 		ifstream f;
-		f.open(nume.c_str(), ios::binary);
+		f.open((nume+".bin").c_str(), ios::binary);
 		int contor;
 		f.read((char*)&contor, sizeof(contor));
 		if (contor > 0)
 		{
 			int length;
-			for (int it = 0; it < contor; i++)
+			char* aux;
+			for (int it = 0; it < contor; it++)
 			{
 				f.read((char*)&length, sizeof(length));
-				char* aux = new char[length + 1];
+				aux = new char[length + 1];
 				f.read(aux, length + 1);
 				string aux2;
 				aux2 = aux;
@@ -1319,6 +1322,10 @@ public:
 	}
 	~database()
 	{
+		for (int it = 0; it < nr-1; it++)
+		{
+			tabele->write();
+		}
 		if (this->tabele != nullptr)
 			delete[] tabele;
 		cfg->write();
@@ -1773,15 +1780,23 @@ public:
 	{
 		int poz=-1;
 		f.open(s, ios::in);
-		getline(f, str);	
-		if(str=="create")
+		poz = s.find(".csv");
+		if (poz == -1)
 		{
-			create(a);
+			getline(f, str);
+			if (str == "create")
+			{
+				create(a);
+			}
+			else
+				if (str == "insert")
+				{
+					insert(a);
+				}
 		}
 		else
-		if (str == "insert")
 		{
-
+			cout << "Nu e gata CSV";
 		}
 		f.close();
 	}
@@ -1816,6 +1831,21 @@ public:
 			str.erase(0, poz + 1);
 			coloane = str;
 			a.create(nume, coloane);
+		}
+	}
+	void insert(database& a)
+	{
+		string  nume, valori;
+		int poz;
+		getline(f, str);
+		nume = str;
+		getline(f, str);
+		int max = stoi(str);
+		for (int it = 0; it < max - 1; it++)
+		{
+			getline(f, str);
+			valori = str;
+			a.create(nume, valori);
 		}
 	}
 	~readfile()
