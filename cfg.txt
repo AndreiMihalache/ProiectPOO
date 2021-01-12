@@ -1,3 +1,5 @@
 config
-2
+4
 tan1 ((col1, int, 10, 0))
+tabela22 ((col1, int, 10, 0))
+tab3 ((col2, int, 22, 0))
