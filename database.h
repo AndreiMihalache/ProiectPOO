@@ -371,6 +371,7 @@ public:
 	~tablefile()
 	{
 		if (inreg != nullptr)
+
 			delete[] inreg;
 	}
 	tablefile(tablefile& t)
@@ -479,7 +480,6 @@ private:
 	reg* rand;
 	//tablefile* file;
 	vector <string> com;
-	
 public:
 	table()
 	{
@@ -850,7 +850,6 @@ public:
 	}
 	void insert(string values)
 	{
-
 		string val, aux;
 		bool ok = 1;
 		val = values;
@@ -876,7 +875,7 @@ public:
 			values.erase(0, 1);
 			values.erase(values.length() - 1);
 			values = values + ", ";
-			for (int j = 0; j < i; j++)
+			for(int j=0;j<i;j++)
 			{
 				poz = values.find(',');
 				aux = values.substr(0, poz);
@@ -1228,6 +1227,66 @@ public:
 		}
 	}
 
+	void import(string comenzi)
+	{
+		ifstream f(comenzi.c_str(), ios::in);
+		int aux;
+		string aux2;
+		bool ok = 1;
+		getline(f, aux2);
+		aux = stoi(aux2);
+		for (int j = 0; j < aux && ok == 1; j++)
+		{
+			string lin;
+			int poz;
+			getline(f, lin);
+			string cop = lin;
+			if (cop[0] != '(' || cop[cop.length() - 1] != ')')
+			{
+				ok = 0;
+			}
+			cop.erase(cop.length() - 1);
+			cop.erase(0, 1);
+			cop += ", ";
+			int cnt = 0;
+			while (cop != "")
+			{
+				poz = cop.find(',');
+				cop.erase(0, poz);
+				if (cop[0] != ',')
+				{
+					ok = 0;
+				}
+				cop.erase(0, 1);
+				if (cop[0] != ' ')
+				{
+					ok = 0;
+				}
+				cop.erase(0, 1);
+				cnt++;
+			}
+			if (cnt != i)
+			{
+				ok = 0;
+			}
+
+		}
+		if (ok == 1)
+		{
+			f.seekg(0);
+			int aux;
+			string lin, aux2;
+			getline(f, aux2);
+			aux = stoi(aux2);
+			for (int j = 0; j < aux; j++)
+			{
+				getline(f, lin);
+				insert(lin);
+			}
+		}
+	}
+
+
 	friend class database;
 	friend class tablefile;
 
@@ -1354,6 +1413,8 @@ public:
 	{
 		if (tabele != nullptr)
 			delete[] tabele;
+
+
 	}
 	writeconfig(writeconfig& c)
 	{
@@ -1389,6 +1450,7 @@ public:
 	}
 	~database()
 	{
+
 		for (int it = 0; it < nr - 1; it++)
 		{
 			tabele->write();
@@ -1835,6 +1897,22 @@ public:
 		}
 		else cout << "Tabela nu exista";
 	}
+	void import(string nume, string comenzi)
+	{
+		int ok = 0, i, k;
+		for (i = 0; i < this->nr - 1; i++)
+		{
+			if (tabele[i].getNume() == nume)
+			{
+				ok = 1;
+				k = i;
+			}
+		}
+		if (ok)
+		{
+			tabele[k].import(comenzi);
+		}
+	}
 	friend class consola;
 	friend istream& operator>>(istream&, database&);
 	friend ostream& operator<<(ostream&, database);
@@ -1946,6 +2024,7 @@ private:
 	string del = "DELETE FROM";
 	string update = "UPDATE";
 	string select = "SELECT";
+	string import = "IMPORT";
 	string instructiune = "";
 	const char* aplicatie = "SGBD Tip Sqlite";
 	int cnt = 0;
@@ -1956,7 +2035,7 @@ public:
 	{
 		cout << aplicatie << endl;
 		cout << "Introduceti una dintre instructiunile:" << endl;
-		cout << create << " / " << drop << " / " << display << " / " << insert << " / " << del << " / " << update << " / " << select << endl;
+		cout << create << " / " << drop << " / " << display << " / " << insert << " / " << del << " / " << update << " / " << select << " / " << import << endl;
 	}
 	//SELECT (cel_putin_o_coloana, ...) | ALL FROM nume_tabela [WHERE nume_coloană = valoare] - clauza WHERE este optionala
 	//SELECT (v1,v2) FROM nume_tabela WHERE .. 
@@ -1994,6 +2073,7 @@ public:
 					if (instructiune == "CREATE TABLE")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "CREATE TABLE nume_tabela ((nume_coloana, tip, dimensiune, valoare_implicita), (nume_coloana2, tip, dimensiune, valoare_implicita)...)" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -2002,23 +2082,23 @@ public:
 						string secv, cop;
 						cop = instructiune;
 						secv = instructiune.substr(0, create.length());
-						if (secv != create && vf == 1)
+						if (secv != create)
 						{
 							vf = 0;
 						}
 						instructiune.erase(0, create.length());
-						if (instructiune[0] != ' ' && vf == 1)
+						if (instructiune[0] != ' ')
 						{
 							vf = 0;
 						}
 						instructiune.erase(0, 1);
 						pz = instructiune.find(' ');
-						if (instructiune[pz] != ' ' && vf == 1)
+						if (instructiune[pz] != ' ')
 						{
 							vf = 0;
 						}
 						instructiune.erase(0, pz + 1);
-						if ((instructiune[instructiune.length() - 1] != ')' || instructiune[0] != '(') && vf == 1)
+						if ((instructiune[instructiune.length() - 1] != ')' || instructiune[0] != '('))
 						{
 							vf = 0;
 						}
@@ -2102,6 +2182,7 @@ public:
 					if (instructiune == "DROP TABLE")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "DROP TABLE nume_tabela" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -2139,6 +2220,7 @@ public:
 					if (instructiune == "DISPLAY TABLE")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "DISPLAY TABLE nume_tabela" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -2175,6 +2257,7 @@ public:
 					if (instructiune == "INSERT INTO")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "INSERT INTO nume_tabela VALUES (val1, val2, ...)" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -2246,6 +2329,7 @@ public:
 					if (instructiune == "DELETE FROM")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "DELETE FROM nume_tabela WHERE nume_coloana = valoare" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -2317,6 +2401,7 @@ public:
 					if (instructiune == "UPDATE")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "UPDATE nume_tabela SET nume_coloana = valoare WHERE nume_coloana = valoare" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -2425,6 +2510,7 @@ public:
 					if (instructiune == "SELECT")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "SELECT (cel_putin_o_coloana, ...) / ALL FROM nume_tabela [WHERE nume_coloana = valoare] - clauza WHERE este optionala" << endl;
+						vf2 = 1;
 					}
 					else
 					{
@@ -2596,12 +2682,66 @@ public:
 						{
 							cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
 							vf2 = 1;
-							break;
 						}
 						if (vf == 1)
 						{
 							instructiune = cop;
 							ok = crud_select(a, poz);
+							vf2 = 1;
+						}
+						else
+						{
+							cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
+							vf2 = 1;
+						}
+					}
+				}
+				poz = instructiune.find(import);
+				if (poz != -1)
+				{
+					if (instructiune == "IMPORT")
+					{
+						cout << "Introduceti o sintaxa de forma : " << endl << "IMPORT nume_tabela nume_fisier.CSV" << endl;
+						vf2 = 1;
+					}
+					else
+					{
+						int vf = 1;
+						int pz;
+						string secv, cop;
+						cop = instructiune;
+						secv = instructiune.substr(0, import.length());
+						if (secv != import)
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, import.length());
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						pz = instructiune.find('.');
+						instructiune.erase(0, pz);
+						if (instructiune[0] != '.')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (instructiune != "csv")
+						{
+							vf = 0;
+						}
+						if (vf == 1)
+						{
+							instructiune = cop;
+							ok = crud_import(a, poz);
 							vf2 = 1;
 						}
 						else
@@ -2708,6 +2848,15 @@ public:
 			cond = "";
 		}
 		a.select(nume, cols, cond);
+		return 1;
+	}
+	int crud_import(database& a, int poz)
+	{
+		instructiune.erase(0, import.length() + 1);
+		poz = instructiune.find(" ");
+		string nume = instructiune.substr(0, poz);
+		instructiune.erase(0, poz + 1);
+		a.import(nume, instructiune);
 		return 1;
 	}
 	void afisare()
