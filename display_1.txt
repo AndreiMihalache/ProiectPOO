@@ -1,0 +1,10 @@
+
+Nume tabela : tan1
+
+Numar coloane : 1
+Coloana 1 : 
+Nume : col1
+Tip : int
+Dimensiune : 10
+Valoare implicita : 0
+
