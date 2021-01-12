@@ -370,7 +370,8 @@ public:
 	~tablefile()
 	{
 		if (inreg != nullptr)
-			delete[]inreg;
+			delete []inreg;
+
 	}
 	tablefile(tablefile& t)
 	{
@@ -434,7 +435,9 @@ public:
 	void write(string name)
 	{
 		ofstream f;
+
 		f.open((name + ".bin").c_str(), ios::binary);
+
 		int length;
 		f.write((char*)&nrreg, sizeof(nrreg));
 		if (nrreg > 0)
@@ -443,7 +446,9 @@ public:
 			{
 				length = inreg[j].length();
 				f.write((char*)&length, sizeof(length));
+
 				f.write(inreg[j].c_str(), length + 1);
+
 			}
 		}
 		f.close();
@@ -459,7 +464,9 @@ private:
 	coloana* col;
 	int i, k;
 	reg* rand;
-	tablefile* file;
+
+	tablefile *file;
+
 public:
 	table()
 	{
@@ -476,7 +483,9 @@ public:
 			delete[]col;
 		if (rand != nullptr)
 			delete[]rand;
-		if (file != nullptr)
+
+		if(file!=nullptr)
+
 			delete file;
 
 	}
@@ -793,7 +802,9 @@ public:
 	void config()
 	{
 		ifstream f;
-		f.open((nume + ".bin").c_str(), ios::binary);
+
+		f.open((nume+".bin").c_str(), ios::binary);
+
 		int contor;
 		f.read((char*)&contor, sizeof(contor));
 		if (contor > 0)
@@ -813,7 +824,6 @@ public:
 	}
 	void insert(string values)
 	{
-
 		string val, aux;
 		bool ok = 1;
 		val = values;
@@ -839,7 +849,8 @@ public:
 			values.erase(0, 1);
 			values.erase(values.length() - 1);
 			values = values + ", ";
-			for (int j = 0; j < i; j++)
+
+			for(int j=0;j<i;j++)
 			{
 				poz = values.find(',');
 				aux = values.substr(0, poz);
@@ -1173,6 +1184,7 @@ public:
 			}
 		}
 	}
+
 	void import(string comenzi)
 	{
 		ifstream f(comenzi.c_str(), ios::in);
@@ -1231,6 +1243,7 @@ public:
 			}
 		}
 	}
+
 
 	friend class database;
 	friend class tablefile;
@@ -1346,6 +1359,8 @@ public:
 	{
 		if (tabele != nullptr)
 			delete[] tabele;
+
+
 	}
 	writeconfig(writeconfig& c)
 	{
@@ -1380,7 +1395,9 @@ public:
 	}
 	~database()
 	{
-		for (int it = 0; it < nr - 1; it++)
+
+		for (int it = 0; it < nr-1; it++)
+
 		{
 			tabele->write();
 		}
