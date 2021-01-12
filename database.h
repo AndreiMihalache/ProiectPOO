@@ -164,6 +164,7 @@ public:
 	friend istream& operator>>(istream&, reg&);
 	friend ostream& operator<<(ostream&, reg);
 	friend class table;
+	friend class tablefile;
 };
 
 istream& operator>>(istream& i, reg& r)
@@ -319,7 +320,6 @@ public:
 		this->valoare_implicita = valoare_implicita;
 	}
 	friend class table;
-
 	friend istream& operator>>(istream&, coloana&);
 	friend ostream& operator<<(ostream&, coloana);
 };
@@ -356,6 +356,102 @@ ostream& operator<<(ostream& o, coloana c)
 	return o;
 }
 
+class tablefile
+{
+private:
+	int nrreg;
+	string* inreg;
+public:
+	tablefile()
+	{
+		nrreg = 0;
+		inreg = nullptr;
+	}
+	~tablefile()
+	{
+		if (inreg != nullptr)
+			delete[]inreg;
+	}
+	tablefile(tablefile& t)
+	{
+		this->nrreg = t.nrreg;
+		if (this->nrreg)
+		{
+			this->inreg = new string[nrreg];
+			for (int it = 0; it < nrreg; it++)
+			{
+				this->inreg = t.inreg;
+			}
+		}
+		else
+			this->inreg = nullptr;
+	}
+	void del(string s)
+	{
+		int contor = 0;
+		string* aux = new string[nrreg - 1];
+		for (int i = 0; i < nrreg; i++)
+		{
+			if (inreg[i].find(s) > 0)
+			{
+				aux[contor] = inreg[i];
+				contor++;
+			}
+		}
+		delete[] inreg;
+		nrreg--;
+		inreg = new string[nrreg];
+		for (int i = 0; i < nrreg; i++)
+		{
+			inreg[i] = aux[i];
+		}
+	}
+	void add(string s)
+	{
+		if (inreg != nullptr)
+		{
+			string* aux = new string[nrreg + 1];
+			for (int i = 0; i < nrreg; i++)
+			{
+				aux[i] = inreg[i];
+			}
+			delete[] inreg;
+			nrreg++;
+			inreg = new string[nrreg];
+			for (int i = 0; i < nrreg - 1; i++)
+			{
+				inreg[i] = aux[i];
+			}
+			inreg[nrreg - 1] = s;
+		}
+		else
+		{
+			nrreg++;
+			inreg = new string[nrreg];
+			inreg[nrreg - 1] = s;
+		}
+	}
+	void write(string name)
+	{
+		ofstream f;
+		f.open((name + ".bin").c_str(), ios::binary);
+		int length;
+		f.write((char*)&nrreg, sizeof(nrreg));
+		if (nrreg > 0)
+		{
+			for (int j = 0; j < nrreg; j++)
+			{
+				length = inreg[j].length();
+				f.write((char*)&length, sizeof(length));
+				f.write(inreg[j].c_str(), length + 1);
+			}
+		}
+		f.close();
+	}
+	friend class table;
+	friend class reg;
+};
+
 class table
 {
 private:
@@ -363,6 +459,7 @@ private:
 	coloana* col;
 	int i, k;
 	reg* rand;
+	tablefile* file;
 public:
 	table()
 	{
@@ -371,6 +468,7 @@ public:
 		i = 0;
 		rand = nullptr;
 		k = 0;
+		file = new tablefile;
 	}
 	~table()
 	{
@@ -378,6 +476,9 @@ public:
 			delete[]col;
 		if (rand != nullptr)
 			delete[]rand;
+		if (file != nullptr)
+			delete file;
+
 	}
 	table(table& t)
 	{
@@ -409,6 +510,7 @@ public:
 		{
 			rand = nullptr;
 		}
+		this->file = t.file;
 	}
 	table operator=(table& t)
 	{
@@ -684,15 +786,40 @@ public:
 		}
 
 	}
+	void write()
+	{
+		file->write(nume);
+	}
+	void config()
+	{
+		ifstream f;
+		f.open((nume + ".bin").c_str(), ios::binary);
+		int contor;
+		f.read((char*)&contor, sizeof(contor));
+		if (contor > 0)
+		{
+			int length;
+			char* aux;
+			for (int it = 0; it < contor; it++)
+			{
+				f.read((char*)&length, sizeof(length));
+				aux = new char[length + 1];
+				f.read(aux, length + 1);
+				string aux2;
+				aux2 = aux;
+				insert(aux2);
+			}
+		}
+	}
 	void insert(string values)
 	{
-		addrand();
+
 		string val, aux;
 		bool ok = 1;
-		values.erase(0, 1);
-		values.erase(values.length() - 1);
-		values = values + ", ";
 		val = values;
+		val.erase(0, 1);
+		val.erase(val.length() - 1);
+		val = val + ", ";
 		int poz, index = -1;
 		while (val != "")
 		{
@@ -707,7 +834,12 @@ public:
 		}
 		if (ok)
 		{
-			for(int j=0;j<i;j++)
+			addrand();
+			file->add(values);
+			values.erase(0, 1);
+			values.erase(values.length() - 1);
+			values = values + ", ";
+			for (int j = 0; j < i; j++)
 			{
 				poz = values.find(',');
 				aux = values.substr(0, poz);
@@ -910,7 +1042,7 @@ public:
 					}
 					if (contor > 0)
 					{
-						for (int g = 0; g < contor -1 ; g++)
+						for (int g = 0; g < contor - 1; g++)
 						{
 							for (int h = 0; h < contor; h++)
 							{
@@ -1041,13 +1173,67 @@ public:
 			}
 		}
 	}
-	//neterminat
-	/*void serializare()
+	void import(string comenzi)
 	{
-		ofstream f()
-	}*/
+		ifstream f(comenzi.c_str(), ios::in);
+		int aux;
+		string aux2;
+		bool ok = 1;
+		getline(f, aux2);
+		aux = stoi(aux2);
+		for (int j = 0; j < aux && ok == 1; j++)
+		{
+			string lin;
+			int poz;
+			getline(f, lin);
+			string cop = lin;
+			if (cop[0] != '(' || cop[cop.length() - 1] != ')')
+			{
+				ok = 0;
+			}
+			cop.erase(cop.length() - 1);
+			cop.erase(0, 1);
+			cop += ", ";
+			int cnt = 0;
+			while (cop != "")
+			{
+				poz = cop.find(',');
+				cop.erase(0, poz);
+				if (cop[0] != ',')
+				{
+					ok = 0;
+				}
+				cop.erase(0, 1);
+				if (cop[0] != ' ')
+				{
+					ok = 0;
+				}
+				cop.erase(0, 1);
+				cnt++;
+			}
+			if (cnt != i)
+			{
+				ok = 0;
+			}
+
+		}
+		if (ok == 1)
+		{
+			f.seekg(0);
+			int aux;
+			string lin, aux2;
+			getline(f, aux2);
+			aux = stoi(aux2);
+			for (int j = 0; j < aux; j++)
+			{
+				getline(f, lin);
+				insert(lin);
+			}
+		}
+	}
 
 	friend class database;
+	friend class tablefile;
 
 	friend istream& operator>>(istream&, table&);
 	friend ostream& operator<<(ostream&, table);
@@ -1101,10 +1287,10 @@ public:
 	void del(string s)
 	{
 		int contor = 0;
-		string* aux = new string[nrtab-1];
+		string* aux = new string[nrtab - 1];
 		for (int i = 0; i < nrtab; i++)
 		{
-			if (tabele[i].find(s)>0)
+			if (tabele[i].find(s) > 0)
 			{
 				aux[contor] = tabele[i];
 				contor++;
@@ -1147,27 +1333,44 @@ public:
 	{
 		ofstream f;
 		f.open("cfg.txt", ofstream::out | std::ofstream::trunc);
-		f << "config"<<endl;
-		f << nrtab+1 << endl;;
+		f << "config" << endl;
+		f << nrtab + 1 << endl;;
 		for (int i = 0; i < nrtab; i++)
 		{
-			
+
 			f << tabele[i] << endl;
 		}
 		f.close();
 	}
 	~writeconfig()
 	{
-
+		if (tabele != nullptr)
+			delete[] tabele;
 	}
-}; 
+	writeconfig(writeconfig& c)
+	{
+		this->nrtab = c.nrtab;
+		if (this->nrtab)
+		{
+			this->tabele = new string[nrtab];
+			for (int it = 0; it < nrtab; it++)
+			{
+				this->tabele[it] = c.tabele[it];
+			}
+		}
+		else
+		{
+			this->tabele = nullptr;
+		}
+	}
+};
 
 class database
 {
 private:
 	int nr;
 	table* tabele;
-	writeconfig *cfg;
+	writeconfig* cfg;
 public:
 	database()
 	{
@@ -1177,6 +1380,10 @@ public:
 	}
 	~database()
 	{
+		for (int it = 0; it < nr - 1; it++)
+		{
+			tabele->write();
+		}
 		if (this->tabele != nullptr)
 			delete[] tabele;
 		cfg->write();
@@ -1197,6 +1404,7 @@ public:
 		{
 			this->tabele = nullptr;
 		}
+		this->cfg = d.cfg;
 	}
 	database operator+(int valoare)
 	{
@@ -1333,14 +1541,14 @@ public:
 	{
 		if (tabele != nullptr)
 		{
-			table* aux = new table[nr-1];
+			table* aux = new table[nr - 1];
 			for (int i = 0; i < nr - 2; i++)
 			{
 				aux[i] = tabele[i];
 			}
 			delete[] tabele;
 			nr--;
-			tabele = new table[nr-1];
+			tabele = new table[nr - 1];
 			for (int i = 0; i < nr - 2; i++)
 			{
 				tabele[i] = aux[i];
@@ -1372,11 +1580,12 @@ public:
 				tabele[nr - 1].adauga_coloana(instr);
 				comenzi.erase(0, poz + 3);
 			}
+			tabele[nr - 1].config();
 			nr++;
 		}
 		else
 		{
-			for (i = 0; i < this->nr-1; i++)
+			for (i = 0; i < this->nr - 1; i++)
 			{
 				if (tabele[i].getNume() == nume)
 					ok = 0;
@@ -1399,6 +1608,7 @@ public:
 					tabele[nr - 1].adauga_coloana(instr);
 					comenzi.erase(0, poz + 3);
 				}
+				tabele[nr - 1].config();
 				nr++;
 			}
 		}
@@ -1428,14 +1638,14 @@ public:
 				tabele[nr - 1].adauga_coloana(instr);
 				comenzi.erase(0, poz + 3);
 			}
-			ofstream f(nume+".bin", ios::out | ios::binary);
+			ofstream f(nume + ".bin", ios::out | ios::binary);
 			f.close();
 			nr++;
 			cout << "Tabela creata" << endl;
 		}
 		else
 		{
-			for (i = 0; i < this->nr-1; i++)
+			for (i = 0; i < this->nr - 1; i++)
 			{
 				if (tabele[i].getNume() == nume)
 					ok = 0;
@@ -1469,7 +1679,7 @@ public:
 	void drop(string nume)
 	{
 		int ok = 0, i;
-		for (i = 0; i < this->nr-1; i++)
+		for (i = 0; i < this->nr - 1; i++)
 		{
 			if (tabele[i].getNume() == nume)
 				ok = 1;
@@ -1601,12 +1811,28 @@ public:
 		}
 		else cout << "Tabela nu exista";
 	}
+	void import(string nume, string comenzi)
+	{
+		int ok = 0, i, k;
+		for (i = 0; i < this->nr - 1; i++)
+		{
+			if (tabele[i].getNume() == nume)
+			{
+				ok = 1;
+				k = i;
+			}
+		}
+		if (ok)
+		{
+			tabele[k].import(comenzi);
+		}
+	}
 	friend class consola;
 	friend istream& operator>>(istream&, database&);
 	friend ostream& operator<<(ostream&, database);
 
 };
- 
+
 
 class readfile
 {
@@ -1614,9 +1840,9 @@ private:
 	ifstream f;
 	string str;
 public:
-	readfile(database &a)
+	readfile(database& a)
 	{
-		f.open("cfg.txt", ios::in);	
+		f.open("cfg.txt", ios::in);
 		getline(f, str);
 		if (str == "config")
 		{
@@ -1626,17 +1852,25 @@ public:
 	}
 	readfile(string s, database& a)
 	{
-		int poz=-1;
+		int poz = -1;
 		f.open(s, ios::in);
-		getline(f, str);	
-		if(str=="create")
+		poz = s.find(".csv");
+		if (poz == -1)
 		{
-			create(a);
+			getline(f, str);
+			if (str == "create")
+			{
+				create(a);
+			}
+			else
+				if (str == "insert")
+				{
+					insert(a);
+				}
 		}
 		else
-		if (str == "insert")
 		{
-
+			cout << "Nu e gata CSV";
 		}
 		f.close();
 	}
@@ -1646,8 +1880,8 @@ public:
 		int poz;
 		getline(f, str);
 		int max = stoi(str);
-		for(int it=0;it<max-1;it++)
-		{	
+		for (int it = 0; it < max - 1; it++)
+		{
 			getline(f, str);
 			poz = str.find(' ');
 			nume = str.substr(0, poz);
@@ -1673,11 +1907,25 @@ public:
 			a.create(nume, coloane);
 		}
 	}
+	void insert(database& a)
+	{
+		string  nume, valori;
+		int poz;
+		getline(f, str);
+		nume = str;
+		getline(f, str);
+		int max = stoi(str);
+		for (int it = 0; it < max - 1; it++)
+		{
+			getline(f, str);
+			valori = str;
+			a.create(nume, valori);
+		}
+	}
 	~readfile()
 	{
 
-
-	};
+	}
 };
 
 class consola
@@ -1690,6 +1938,7 @@ private:
 	string del = "DELETE FROM";
 	string update = "UPDATE";
 	string select = "SELECT";
+	string import = "IMPORT";
 	string instructiune = "";
 	const char* aplicatie = "SGBD Tip Sqlite";
 	int cnt = 0;
@@ -1700,7 +1949,7 @@ public:
 	{
 		cout << aplicatie << endl;
 		cout << "Introduceti una dintre instructiunile:" << endl;
-		cout << create << " / " << drop << " / " << display << " / " << insert << " / " << del << " / " << update << " / " << select << endl;
+		cout << create << " / " << drop << " / " << display << " / " << insert << " / " << del << " / " << update << " / " << select << " / " << import << endl;
 	}
 	//SELECT (cel_putin_o_coloana, ...) | ALL FROM nume_tabela [WHERE nume_coloană = valoare] - clauza WHERE este optionala
 	//SELECT (v1,v2) FROM nume_tabela WHERE .. 
@@ -1711,19 +1960,16 @@ public:
 		int poz = -1, ok = 1;
 		while (ok)
 		{
-			bool vf2 = 0;
 			cout << endl;
 			if (instructiune == "MENIU")
 			{
 				cout << "Introduceti una dintre instructiunile:" << endl;
 				cout << create << " / " << drop << " / " << display << " / " << insert << " / " << del << " / " << update << " / " << select << endl << endl;
-				vf2 = 1;
 			}
 			else
 			{
 				cout << "Pentru a iesi scrieti EXIT" << endl;
 				cout << "Pentru meniu scrieti MENIU" << endl << endl;
-				vf2 = 1;
 			}
 			getline(std::cin, instructiune);
 			if (instructiune == "EXIT")
@@ -1733,11 +1979,11 @@ public:
 			}
 			else
 			{
+				bool vf2 = 0;
 				poz = instructiune.find(create);
 
 				if (poz != -1)
 				{
-					cout << endl;
 					if (instructiune == "CREATE TABLE")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "CREATE TABLE nume_tabela ((nume_coloana, tip, dimensiune, valoare_implicita), (nume_coloana2, tip, dimensiune, valoare_implicita)...)" << endl;
@@ -1750,23 +1996,23 @@ public:
 						string secv, cop;
 						cop = instructiune;
 						secv = instructiune.substr(0, create.length());
-						if (secv != create && vf == 1)
+						if (secv != create)
 						{
 							vf = 0;
 						}
 						instructiune.erase(0, create.length());
-						if (instructiune[0] != ' ' && vf == 1)
+						if (instructiune[0] != ' ')
 						{
 							vf = 0;
 						}
 						instructiune.erase(0, 1);
 						pz = instructiune.find(' ');
-						if (instructiune[pz] != ' ' && vf == 1)
+						if (instructiune[pz] != ' ')
 						{
 							vf = 0;
 						}
-						instructiune.erase(0, pz+1);
-						if ((instructiune[instructiune.length() - 1] != ')' || instructiune[0] != '(') && vf == 1)
+						instructiune.erase(0, pz + 1);
+						if ((instructiune[instructiune.length() - 1] != ')' || instructiune[0] != '('))
 						{
 							vf = 0;
 						}
@@ -1847,7 +2093,6 @@ public:
 				poz = instructiune.find(drop);
 				if (poz != -1)
 				{
-					cout << endl;
 					if (instructiune == "DROP TABLE")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "DROP TABLE nume_tabela" << endl;
@@ -1885,7 +2130,7 @@ public:
 				poz = instructiune.find(display);
 				if (poz != -1)
 				{
-					cout << endl;
+
 					if (instructiune == "DISPLAY TABLE")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "DISPLAY TABLE nume_tabela" << endl;
@@ -1923,7 +2168,6 @@ public:
 				poz = instructiune.find(insert);
 				if (poz != -1)
 				{
-					cout << endl;
 					if (instructiune == "INSERT INTO")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "INSERT INTO nume_tabela VALUES (val1, val2, ...)" << endl;
@@ -1996,10 +2240,9 @@ public:
 				poz = instructiune.find(del);
 				if (poz != -1)
 				{
-					cout << endl;
 					if (instructiune == "DELETE FROM")
 					{
-						cout<< "Introduceti o sintaxa de forma : " << endl << "DELETE FROM nume_tabela WHERE nume_coloana = valoare" << endl;
+						cout << "Introduceti o sintaxa de forma : " << endl << "DELETE FROM nume_tabela WHERE nume_coloana = valoare" << endl;
 						vf2 = 1;
 					}
 					else
@@ -2069,7 +2312,6 @@ public:
 				poz = instructiune.find(update);
 				if (poz != -1)
 				{
-					cout << endl;
 					if (instructiune == "UPDATE")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "UPDATE nume_tabela SET nume_coloana = valoare WHERE nume_coloana = valoare" << endl;
@@ -2179,7 +2421,6 @@ public:
 				poz = instructiune.find(select);
 				if (poz != -1)
 				{
-					cout << endl;
 					if (instructiune == "SELECT")
 					{
 						cout << "Introduceti o sintaxa de forma : " << endl << "SELECT (cel_putin_o_coloana, ...) / ALL FROM nume_tabela [WHERE nume_coloana = valoare] - clauza WHERE este optionala" << endl;
@@ -2355,7 +2596,6 @@ public:
 						{
 							cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
 							vf2 = 1;
-							break;
 						}
 						if (vf == 1)
 						{
@@ -2370,9 +2610,64 @@ public:
 						}
 					}
 				}
+				poz = instructiune.find(import);
+				if (poz != -1)
+				{
+					if (instructiune == "IMPORT")
+					{
+						cout << "Introduceti o sintaxa de forma : " << endl << "IMPORT nume_tabela nume_fisier.CSV" << endl;
+						vf2 = 1;
+					}
+					else
+					{
+						int vf = 1;
+						int pz;
+						string secv, cop;
+						cop = instructiune;
+						secv = instructiune.substr(0, import.length());
+						if (secv != import)
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, import.length());
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						pz = instructiune.find(' ');
+						instructiune.erase(0, pz);
+						if (instructiune[0] != ' ')
+						{
+							vf = 0;
+						}
+						pz = instructiune.find('.');
+						instructiune.erase(0, pz);
+						if (instructiune[0] != '.')
+						{
+							vf = 0;
+						}
+						instructiune.erase(0, 1);
+						if (instructiune != "csv")
+						{
+							vf = 0;
+						}
+						if (vf == 1)
+						{
+							instructiune = cop;
+							ok = crud_import(a, poz);
+							vf2 = 1;
+						}
+						else
+						{
+							cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
+							vf2 = 1;
+						}
+					}
+				}
 				if (vf2 == 0)
 				{
-					cout<<"Comanda introdusa nu este corecta. Incercati din nou" << endl;
+					cout << "Comanda introdusa nu este corecta. Incercati din nou" << endl;
 				}
 				comenzi[cnt] = instructiune;
 				cnt++;
@@ -2451,7 +2746,7 @@ public:
 		instructiune = instructiune + ' ';
 		instructiune.erase(poz, select.length() + 1);
 		poz = instructiune.find("FROM");
-		cols = instructiune.substr(0, poz-1);
+		cols = instructiune.substr(0, poz - 1);
 		instructiune.erase(0, poz + 5);
 		poz = instructiune.find(' ');
 		nume = instructiune.substr(0, poz);
@@ -2467,6 +2762,15 @@ public:
 			cond = "";
 		}
 		a.select(nume, cols, cond);
+		return 1;
+	}
+	int crud_import(database& a, int poz)
+	{
+		instructiune.erase(0, import.length() + 1);
+		poz = instructiune.find(" ");
+		string nume = instructiune.substr(0, poz);
+		instructiune.erase(0, poz + 1);
+		a.import(nume, instructiune);
 		return 1;
 	}
 	void afisare()
