@@ -1453,7 +1453,7 @@ public:
 
 		for (int it = 0; it < nr - 1; it++)
 		{
-			tabele->write();
+			tabele[it].write();
 		}
 		if (this->tabele != nullptr)
 			delete[] tabele;
@@ -2888,6 +2888,3 @@ public:
 	}
 
 };
-//CREATE TABLE tab1 ((coltxt, text, 10, nimic), (colfloat, float, 10, 0), (colint, int, 10, 0))
-//INSERT INTO tab1 VALUES da,5,6
-
