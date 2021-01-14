@@ -3,6 +3,9 @@
 #include<iomanip>
 #include <fstream>
 #include <vector>
+#include <list>
+#include <map>
+#include <set>
 
 using namespace std;
 
@@ -75,7 +78,7 @@ public:
 		}
 
 	}
-	void setCap(int n)
+	virtual void setCap(int n)
 	{
 		this->capacitate = n;
 		if (valori == nullptr)
@@ -88,7 +91,7 @@ public:
 			valori = new string[n];
 		}
 	}
-	void delpos(int ind)
+	virtual void delpos(int ind)
 	{
 		if (ind > capacitate)
 		{
@@ -141,7 +144,7 @@ public:
 			valori[capacitate - 1] = "";
 		}
 	}
-	void append(string val)
+	virtual void append(string val)
 	{
 		if (valori == nullptr)
 		{
@@ -167,7 +170,172 @@ public:
 	friend class table;
 	friend class tablefile;
 };
+class reg2 : public reg
+{
+private:
+	map <int,string> valori;
+	int contor, capacitate;
+public:
+	reg2()
+	{
+		contor = 0;
+		capacitate = 0;
+	}
+	reg2 (reg2& r)
+	{
+		this->contor = r.contor;
+		this->capacitate = r.capacitate;
+		if (this->capacitate)
+		{
+			this->valori = r.valori;
+		}
+	}
+	reg2 operator=(reg2& r)
+	{
+		
+		this->contor = r.contor;
+		this->capacitate = r.capacitate;
+		if (this->capacitate)
+		{
+			this->valori = r.valori;
+		}
+		return *this;
+	}
+	~reg2()
+	{
+		
+	}
+	void setCap(int n) override
+	{
+		this->capacitate = n;
+	}
+	void delpos(int index) override
+	{
+		valori.erase(index);
+	}
+	void append(string val) override
+	{
+		if (contor < capacitate)
+		{
+			valori[contor] = val;
+			contor++;
+		}
+		else
+		{
+			cout << "Capacitate maxima atinsa";
+		}
+	}
+	friend class table;
+};
 
+class reg3 : public reg
+{
+private:
+	set <pair<int,string>> valori;
+	int contor, capacitate;
+public:
+	reg3()
+	{
+		contor = 0;
+		capacitate = 0;
+	}
+	reg3(reg3& r)
+	{
+		this->contor = r.contor;
+		this->capacitate = r.capacitate;
+		if (this->capacitate)
+		{
+			this->valori = r.valori;
+		}
+	}
+	reg3 operator=(reg3& r)
+	{
+
+		this->contor = r.contor;
+		this->capacitate = r.capacitate;
+		if (this->capacitate)
+		{
+			this->valori = r.valori;
+		}
+		return *this;
+	}
+	~reg3()
+	{
+
+	}
+	void setCap(int n) override
+	{
+		this->capacitate = n;
+	}
+	void append(string val) override
+	{
+		if (contor < capacitate)
+		{
+			valori.insert(make_pair(contor, val));
+			contor++;
+		}
+		else
+		{
+			cout << "Capacitate maxima atinsa";
+		}
+	}
+	friend class table;
+};
+
+class reg4 : public reg
+{
+private:
+	list <string> valori;
+	int contor, capacitate;
+public:
+	reg4()
+	{
+		contor = 0;
+		capacitate = 0;
+	}
+	reg4(reg4& r)
+	{
+		this->contor = r.contor;
+		this->capacitate = r.capacitate;
+		if (this->capacitate)
+		{
+			this->valori = r.valori;
+		}
+	}
+	reg4 operator=(reg4& r)
+	{
+
+		this->contor = r.contor;
+		this->capacitate = r.capacitate;
+		if (this->capacitate)
+		{
+			this->valori = r.valori;
+		}
+		return *this;
+	}
+	~reg4()
+	{
+
+	}
+	void setCap(int n) override
+	{
+		this->capacitate = n;
+	}
+
+	void append(string val) override
+	{
+		if (contor < capacitate)
+		{
+			valori.push_back(val);
+			contor++;
+		}
+		else
+		{
+			cout << "Capacitate maxima atinsa";
+		}
+	}
+	friend class table;
+};
 istream& operator>>(istream& i, reg& r)
 {
 	cout << endl << "Capacitate: ";
@@ -473,7 +641,7 @@ public:
 
 class table
 {
-private:
+protected:
 	string nume;
 	coloana* col;
 	int i, k;
@@ -1294,6 +1462,7 @@ public:
 	friend ostream& operator<<(ostream&, table);
 	friend ofstream& operator<<(ofstream&, table);
 };
+
 
 istream& operator>>(istream& i, table& t)
 {
