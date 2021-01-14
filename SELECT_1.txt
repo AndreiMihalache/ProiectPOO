@@ -1,0 +1,3 @@
+nume        valoare     
+Andrei      20          
+Alis        20          

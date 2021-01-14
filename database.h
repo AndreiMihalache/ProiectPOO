@@ -2,6 +2,7 @@
 #include <string>
 #include<iomanip>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -370,8 +371,8 @@ public:
 	~tablefile()
 	{
 		if (inreg != nullptr)
-			delete []inreg;
 
+			delete[] inreg;
 	}
 	tablefile(tablefile& t)
 	{
@@ -386,6 +387,23 @@ public:
 		}
 		else
 			this->inreg = nullptr;
+	}
+	tablefile operator=(tablefile& t)
+	{
+		if (this->inreg != nullptr)
+			delete[] this->inreg;
+		this->nrreg = t.nrreg;
+		if (this->nrreg)
+		{
+			this->inreg = new string[nrreg];
+			for (int it = 0; it < nrreg; it++)
+			{
+				this->inreg = t.inreg;
+			}
+		}
+		else
+			this->inreg = nullptr;
+		return *this;
 	}
 	void del(string s)
 	{
@@ -435,9 +453,7 @@ public:
 	void write(string name)
 	{
 		ofstream f;
-
 		f.open((name + ".bin").c_str(), ios::binary);
-
 		int length;
 		f.write((char*)&nrreg, sizeof(nrreg));
 		if (nrreg > 0)
@@ -446,9 +462,7 @@ public:
 			{
 				length = inreg[j].length();
 				f.write((char*)&length, sizeof(length));
-
 				f.write(inreg[j].c_str(), length + 1);
-
 			}
 		}
 		f.close();
@@ -464,9 +478,8 @@ private:
 	coloana* col;
 	int i, k;
 	reg* rand;
-
-	tablefile *file;
-
+	//tablefile* file;
+	vector <string> com;
 public:
 	table()
 	{
@@ -475,7 +488,7 @@ public:
 		i = 0;
 		rand = nullptr;
 		k = 0;
-		file = new tablefile;
+		//file = new tablefile;
 	}
 	~table()
 	{
@@ -483,11 +496,6 @@ public:
 			delete[]col;
 		if (rand != nullptr)
 			delete[]rand;
-
-		if(file!=nullptr)
-
-			delete file;
-
 	}
 	table(table& t)
 	{
@@ -519,7 +527,9 @@ public:
 		{
 			rand = nullptr;
 		}
-		this->file = t.file;
+		this->com = t.com;
+		//this->file = t.file;
+
 	}
 	table operator=(table& t)
 	{
@@ -558,6 +568,8 @@ public:
 		{
 			rand = nullptr;
 		}
+		//this->file = t.file;
+		this->com = t.com;
 		return *this;
 	}
 	/*table operator+(int valoare)
@@ -795,16 +807,30 @@ public:
 		}
 
 	}
+	
 	void write()
 	{
-		file->write(nume);
+		ofstream f;
+		f.open((nume + ".bin").c_str(), ios::binary);
+		int length;
+		length = com.size();
+		f.write((char*)&length, sizeof(length));
+		if (com.size() > 0)
+		{
+
+			for (int j = 0; j < com.size(); j++)
+			{
+				length = com[j].length();
+				f.write((char*)&length, sizeof(length));
+				f.write(com[j].c_str(), length + 1);
+			}
+		}
+		f.close();
 	}
 	void config()
 	{
 		ifstream f;
-
-		f.open((nume+".bin").c_str(), ios::binary);
-
+		f.open((nume + ".bin").c_str(), ios::binary);
 		int contor;
 		f.read((char*)&contor, sizeof(contor));
 		if (contor > 0)
@@ -845,11 +871,10 @@ public:
 		if (ok)
 		{
 			addrand();
-			file->add(values);
+			com.push_back(values);
 			values.erase(0, 1);
 			values.erase(values.length() - 1);
 			values = values + ", ";
-
 			for(int j=0;j<i;j++)
 			{
 				poz = values.find(',');
@@ -978,29 +1003,39 @@ public:
 			cout << "Una din coloane nu exista";
 		}
 	}
-	void center(string str)
+	void center(string str, int& nrselect, ofstream& f)
 	{
 		int size;
 		string aux;
-		if (str.length() > 12) {
-			aux = str.substr(0, 12);
-			size = 0;
+		if (str == string("endl"))
+		{
+			cout << endl;
+			f << endl;
 		}
 		else
 		{
-			aux = str;
-			size = 12 - str.length();
-		}
-		if (size == 0)
-		{
-			cout << aux << '  ';
-		}
-		else
-		{
-			cout << aux << string(size, ' ');
+			if (str.length() > 12) {
+				aux = str.substr(0, 12);
+				size = 0;
+			}
+			else
+			{
+				aux = str;
+				size = 12 - str.length();
+			}
+			if (size == 0)
+			{
+				cout << aux << ' ';
+				f << aux << ' ';
+			}
+			else
+			{
+				cout << aux << string(size, ' ');
+				f << aux << string(size, ' ');
+			}
 		}
 	}
-	void select(string cols, string cond)
+	void select(string cols, string cond, int& nrselect)
 	{
 		if (k == 0)
 		{
@@ -1008,6 +1043,12 @@ public:
 		}
 		else
 		{
+			nrselect++;
+			string d = string("SELECT");
+			d = d + '_';
+			d = d + to_string(nrselect);
+			d = d + ".txt";
+			ofstream f(d.c_str(), ios::out);
 			cout << endl;
 			if (cond == "")
 			{
@@ -1016,15 +1057,15 @@ public:
 					cout << string(12 * i, '-') << endl;;
 					for (int j = 0; j < i; j++)
 					{
-						center(col[j].nume);
+						center(col[j].nume, nrselect, f);
 					}
 					cout << endl << string(12 * i, '-') << endl;
 					for (int x = 0; x < k; x++)
 					{
-						cout << endl;
+						center(string("endl"), nrselect, f);
 						for (int z = 0; z < i; z++)
 						{
-							center(rand[x].valori[z]);
+							center(rand[x].valori[z], nrselect, f);
 						}
 					}
 				}
@@ -1063,17 +1104,17 @@ public:
 								}
 							}
 						}
-						cout << endl;
+						center(string("endl"), nrselect, f);
 						for (int j = 0; j < contor; j++)
 						{
-							cout << col[indexes[j]].nume << "\t\t";
+							center(col[indexes[j]].nume, nrselect, f);
 						}
-						cout << endl;
+						center(string("endl"), nrselect, f);
 						for (int j = 0; j < k; j++)
 						{
 							for (int x = 0; x < contor; x++)
 							{
-								cout << rand[j].valori[indexes[x]] << "\t\t";
+								center(rand[j].valori[indexes[x]], nrselect, f);
 							}
 						}
 					}
@@ -1111,15 +1152,15 @@ public:
 					{
 						for (int j = 0; j < i; j++)
 						{
-							cout << col[j].nume << "\t\t";
+							center(col[j].nume, nrselect, f);
 						}
 						for (int x = 0; x < k; x++)
 						{
-							cout << endl;
+							center(string("endl"), nrselect, f);
 							for (int z = 0; z < i; z++)
 							{
 								if (rand[x].valori[index] == arg2)
-									cout << rand[x].valori[z] << "\t\t";
+									center(rand[x].valori[z], nrselect, f);
 							}
 						}
 					}
@@ -1159,18 +1200,18 @@ public:
 									}
 								}
 							}
-							cout << endl;
+							center(string("endl"), nrselect, f);
 							for (int j = 0; j < contor; j++)
 							{
-								cout << col[j].nume << "\t\t";
+								center(col[j].nume, nrselect, f);
 							}
-							cout << endl;
+							center(string("endl"), nrselect, f);
 							for (int j = 0; j < k; j++)
 							{
 								for (int x = 0; x < contor; x++)
 								{
 									if (rand[x].valori[index] == arg2)
-										cout << rand[j].valori[x] << "\t\t";
+										center(rand[j].valori[x], nrselect, f);
 								}
 							}
 						}
@@ -1182,6 +1223,7 @@ public:
 					cout << "Nu exista inregistrari care sa respecte conditia";
 				}
 			}
+			f.close();
 		}
 	}
 
@@ -1250,6 +1292,7 @@ public:
 
 	friend istream& operator>>(istream&, table&);
 	friend ostream& operator<<(ostream&, table);
+	friend ofstream& operator<<(ofstream&, table);
 };
 
 istream& operator>>(istream& i, table& t)
@@ -1277,6 +1320,17 @@ istream& operator>>(istream& i, table& t)
 }
 
 ostream& operator<<(ostream& o, table t)
+{
+	o << endl << "Nume tabela : " << t.getNume() << endl << endl;
+	o << "Numar coloane : " << t.getI() << endl;
+	for (int j = 0; j < t.i; j++)
+	{
+		o << "Coloana " << j + 1 << " : " << t.col[j] << endl;
+	}
+	return o;
+}
+
+ofstream& operator<<(ofstream& o, table t)
 {
 	o << endl << "Nume tabela : " << t.getNume() << endl << endl;
 	o << "Numar coloane : " << t.getI() << endl;
@@ -1386,6 +1440,7 @@ private:
 	int nr;
 	table* tabele;
 	writeconfig* cfg;
+	int nrdisplay = 0, nrselect = 0;
 public:
 	database()
 	{
@@ -1396,10 +1451,9 @@ public:
 	~database()
 	{
 
-		for (int it = 0; it < nr-1; it++)
-
+		for (int it = 0; it < nr - 1; it++)
 		{
-			tabele->write();
+			tabele[it].write();
 		}
 		if (this->tabele != nullptr)
 			delete[] tabele;
@@ -1746,6 +1800,21 @@ public:
 		}
 		if (ok)
 		{
+			nrdisplay++;
+			for (i = 0; i < this->nr - 1; i++)
+			{
+				if (tabele[i].getNume() == nume)
+				{
+					string d("display");
+					d = d + '_';
+					d = d + to_string(nrdisplay);
+					d = d + ".txt";
+					ofstream f(d.c_str(), ios::out);
+					f << tabele[i];
+					f.close();
+
+				}
+			}
 			for (i = 0; i < this->nr - 1; i++)
 			{
 				if (tabele[i].getNume() == nume)
@@ -1824,7 +1893,7 @@ public:
 		}
 		if (ok)
 		{
-			tabele[k].select(cols, cond);
+			tabele[k].select(cols, cond, nrselect);
 		}
 		else cout << "Tabela nu exista";
 	}
@@ -2819,6 +2888,3 @@ public:
 	}
 
 };
-//CREATE TABLE tab1 ((coltxt, text, 10, nimic), (colfloat, float, 10, 0), (colint, int, 10, 0))
-//INSERT INTO tab1 VALUES da,5,6
-
