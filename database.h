@@ -2014,7 +2014,14 @@ public:
 	}
 };
 
-class consola
+class base_console
+{
+public:
+	virtual void afisare() = 0;
+	virtual int crud(database&) = 0;
+};
+
+class consola : public base_console
 {
 private:
 	string create = "CREATE TABLE";
@@ -2040,7 +2047,7 @@ public:
 	//SELECT (cel_putin_o_coloana, ...) | ALL FROM nume_tabela [WHERE nume_coloană = valoare] - clauza WHERE este optionala
 	//SELECT (v1,v2) FROM nume_tabela WHERE .. 
 
-	int crud(database& a)
+	int crud(database& a) override
 	{
 
 		int poz = -1, ok = 1;
@@ -2859,7 +2866,7 @@ public:
 		a.import(nume, instructiune);
 		return 1;
 	}
-	void afisare()
+	void afisare() override
 	{
 		if (comenzi != nullptr)
 		{
