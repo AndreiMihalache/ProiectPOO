@@ -2220,6 +2220,7 @@ public:
 	{
 
 		int poz = -1, ok = 1;
+		bool vf3 = 0;
 		while (ok)
 		{
 			cout << endl;
@@ -2227,11 +2228,13 @@ public:
 			{
 				cout << "Introduceti una dintre instructiunile:" << endl;
 				cout << create << " / " << drop << " / " << display << " / " << insert << " / " << del << " / " << update << " / " << select << endl << endl;
+				vf3 = 1;
 			}
 			else
 			{
 				cout << "Pentru a iesi scrieti EXIT" << endl;
 				cout << "Pentru meniu scrieti MENIU" << endl << endl;
+				vf3 = 1;
 			}
 			getline(std::cin, instructiune);
 			if (instructiune == "EXIT")
@@ -2242,6 +2245,10 @@ public:
 			else
 			{
 				bool vf2 = 0;
+				if (vf3 = 1)
+				{
+					vf2 = 1;
+				}
 				poz = instructiune.find(create);
 
 				if (poz != -1)
