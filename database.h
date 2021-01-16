@@ -1294,10 +1294,12 @@ public:
 				string arg1;
 				string arg2;
 				int poz;
+				cond.erase(0, 1);
 				poz = cond.find(' ');
 				arg1 = cond.substr(0, poz);
-				cond.erase(0, poz + 2);
-				arg2 = cond;
+				cond.erase(0, poz + 3);
+				poz = cond.find(' ');
+				arg2 = cond.substr(0, poz);;
 				int ok1 = 0, ok2 = 0;
 				int index;
 				for (int j = 0; j < i; j++)
@@ -1378,7 +1380,7 @@ public:
 							{
 								for (int x = 0; x < contor; x++)
 								{
-									if (rand[x].valori[index] == arg2)
+									if (rand[j].valori[index] == arg2)
 										center(rand[j].valori[x], nrselect, f);
 								}
 							}
@@ -2840,19 +2842,22 @@ public:
 								{
 									vf = 0;
 								}
+								instructiune.erase(0, 1);
 								pz = instructiune.find(' ');
 								instructiune.erase(0, pz);
 								if (instructiune[0] != ' ')
 								{
 									vf = 0;
 								}
+								//instructiune.erase(0, pz);
 								instructiune.erase(0, 1);
-								instructiune.erase(0, pz);
+								//instructiune.erase(0, pz);
 								if (instructiune[0] != '=')
 								{
 									vf = 0;
 								}
 								instructiune.erase(0, 1);
+								pz = instructiune.find(' ');
 								instructiune.erase(0, pz);
 								if (instructiune[0] != ' ')
 								{
