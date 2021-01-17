@@ -15,6 +15,7 @@ private:
 	static int index;
 	string* valori;
 	int contor, capacitate;
+	vector <reg> ierarhie;
 public:
 	reg()
 	{
@@ -175,6 +176,7 @@ class reg2 : public reg
 private:
 	map <int,string> valori;
 	int contor, capacitate;
+	reg* base;
 public:
 	reg2()
 	{
@@ -233,6 +235,7 @@ class reg3 : public reg
 private:
 	set <pair<int,string>> valori;
 	int contor, capacitate;
+	reg* base;
 public:
 	reg3()
 	{
@@ -287,6 +290,7 @@ class reg4 : public reg
 private:
 	list <string> valori;
 	int contor, capacitate;
+	reg* base;
 public:
 	reg4()
 	{
@@ -336,6 +340,7 @@ public:
 	}
 	friend class table;
 };
+
 istream& operator>>(istream& i, reg& r)
 {
 	cout << endl << "Capacitate: ";
