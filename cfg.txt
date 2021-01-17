@@ -1,6 +1,7 @@
 config
-5
+6
 tan1 ((col1, int, 10, 0))
 tabela22 ((col1, int, 10, 0))
 tab3 ((col2, int, 22, 0))
 nume2 ((nume, text, 30, 0), (valoare, int, 10, 0))
+tab1 ((col1, int, 10, 0), (col2, int, 10, 0))
